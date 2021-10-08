@@ -17,21 +17,6 @@ extern int current_pos_x;
 extern int current_pos_y;
 extern int previous_type;
 
-int is_forbidden_move(int x, int y)
-{
-    if (is_five_black(x, y))
-        return 0;
-
-    int res = 0;
-    res += is_over_line(x, y);
-    res += is_over_one_active_three(x, y);
-    res += is_over_one_four(x, y);
-
-    if (res > 0)
-        return 1;
-    return 0;
-}
-
 int is_five_black(int x, int y)
 {
     int count;
@@ -2284,6 +2269,21 @@ int is_over_one_four(int x, int y)
     if (is_four_sub_diagonal(x, y))
         res++;
     if (res > 1)
+        return 1;
+    return 0;
+}
+
+int is_forbidden_move(int x, int y)
+{
+    if (is_five_black(x, y))
+        return 0;
+
+    int res = 0;
+    res += is_over_line(x, y);
+    res += is_over_one_active_three(x, y);
+    res += is_over_one_four(x, y);
+
+    if (res > 0)
         return 1;
     return 0;
 }
