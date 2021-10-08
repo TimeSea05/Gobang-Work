@@ -17,6 +17,21 @@ extern int current_pos_x;
 extern int current_pos_y;
 extern int previous_type;
 
+int is_forbidden_move(int x, int y)
+{
+    if (is_five_black(x, y))
+        return 0;
+
+    int res = 0;
+    res += is_over_line(x, y);
+    res += is_over_one_active_three(x, y);
+    res += is_over_one_four(x, y);
+
+    if (res > 0)
+        return 1;
+    return 0;
+}
+
 int is_five_black(int x, int y)
 {
     int count;
@@ -1249,18 +1264,17 @@ int is_active_three_sub_diagonal(int x, int y)
     return 0;
 }
 
-int is_over_two_active_threes(int x, int y)
+int is_over_one_active_three(int x, int y)
 {
-    int count_active_three = 0;
-    count_active_three += is_active_three_horizontal(x, y);
-    count_active_three += is_active_three_vertical(x, y);
-    count_active_three += is_active_three_main_diagonal(x, y);
-    count_active_three += is_active_three_sub_diagonal(x, y);
+    int res = 0;
+    res += is_active_three_horizontal(x, y);
+    res += is_active_three_vertical(x, y);
+    res += is_active_three_main_diagonal(x, y);
+    res += is_active_three_sub_diagonal(x, y);
 
-    if (count_active_three > 1)
+    if (res > 1)
         return 1;
-    else
-        return 0;
+    return 0;
 }
 
 
@@ -2255,5 +2269,21 @@ int is_four_sub_diagonal(int x, int y)
     }
 
     /********** no fours found**********/
+    return 0;
+}
+
+int is_over_one_four(int x, int y)
+{
+    int res = 0;
+    if (is_four_horizontal(x, y))
+        res++;
+    if (is_four_vertical(x, y))
+        res++;
+    if (is_four_main_diagonal(x, y))
+        res++;
+    if (is_four_sub_diagonal(x, y))
+        res++;
+    if (res > 1)
+        return 1;
     return 0;
 }
