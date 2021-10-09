@@ -1,3 +1,5 @@
+#include "check_forbidden_moves.h"
+
 #define SIZE 15
 #define CHARSIZE 2
 
@@ -17,65 +19,78 @@ extern int current_pos_x;
 extern int current_pos_y;
 extern int previous_type;
 
-int is_five_black(int x, int y)
+// count the pieces horizontally
+// then return the number of identical pieces around a given piece
+// p1 & p2 are used to store extermities of these linked pieces
+static int count_horizontally(int x, int y, int * p1, int * p2, int type)
 {
-    int count;
-    int i, j;
+    int count = 1;
+    int i = y;
 
-    // horizontal
-    count = 1;
-    i = y;
     while (i > 0)
-        if (record_board[x][i - 1] == BLACKPIECE || record_board[x][i - 1] == BLACKTRIANGLE)
+        if (record_board[x][i - 1] == type || record_board[x][i - 1] == type + 2)
         {
             count++;
             i--;
         }
         else
             break;
+    *p1 = i - 1;
     i = y;
     while (i < SIZE - 1)
-        if (record_board[x][i + 1] == BLACKPIECE || record_board[x][i + 1] == BLACKTRIANGLE)
+        if (record_board[x][i + 1] == type || record_board[x][i + 1] == type + 2)
         {
             count++;
             i++;
         }
         else
             break;
-    if (count == 5)
-        return 1;
+    *p2 = i + 1;
 
+    return count;
+}
 
-    // vertical
-    count = 1;
-    i = x;
+// count the pieces vertically
+// then return the number of identical pieces around a given piece
+// p1 & p2 are used to store extermities of these linked pieces
+static int count_vertically(int x, int y, int * p1, int * p2, int type)
+{
+    int count = 1;
+    int i = x;
+    
     while (i > 0)
-        if (record_board[i - 1][y] == BLACKPIECE || record_board[i - 1][y] == BLACKTRIANGLE)
+        if (record_board[i - 1][y] == type || record_board[i - 1][y] == type + 2)
         {
             count++;
-            i--;    
+            i--;
         }
         else
             break;
+    *p1 = i - 1;
     i = x;
     while (i < SIZE - 1)
-        if (record_board[i + 1][y] == BLACKPIECE || record_board[i + 1][y] == BLACKTRIANGLE)
+        if (record_board[i + 1][y] == type || record_board[i + 1][y] == type + 2)
         {
             count++;
             i++;
         }
         else
             break;
-    if (count == 5)
-        return 1;
-    
-    
-    // diagonal
-    // main diagonal
-    count = 1;
-    i = x, j = y;
+    *p2 = i + 1;
+
+    return count;
+}
+
+// count the pieces main-diagonally
+// then return the number of identical pieces around a given piece
+// p1 & p2 & p3 & p4 are used to store extermities of these linked pieces
+static int count_main_diagonally(int x, int y, int * p1, int * p2, int * p3, int * p4, int type)
+{
+    int count = 1;
+    int i = x, j = y;
+
     while (i > 0 && j > 0)
-        if (record_board[i - 1][j - 1] == BLACKPIECE || record_board[i - 1][j - 1] == BLACKTRIANGLE)
+        if (record_board[i - 1][j - 1] == type || record_board[i - 1][j - 1] == type + 2)
         {
             count++;
             i--;
@@ -83,9 +98,10 @@ int is_five_black(int x, int y)
         }
         else
             break;
+    *p1 = i - 1, *p3 = j - 1;
     i = x, j = y;
     while (i < SIZE - 1 && j < SIZE - 1)
-        if (record_board[i + 1][j + 1] == BLACKPIECE || record_board[i + 1][j + 1] == BLACKTRIANGLE)
+        if (record_board[i + 1][j + 1] == type || record_board[i + 1][j + 1] == type + 2)
         {
             count++;
             i++;
@@ -93,14 +109,21 @@ int is_five_black(int x, int y)
         }
         else
             break;
-    if (count == 5)
-        return 1;
+    *p2 = i + 1, *p4 = j + 1;
+
+    return count;
+}
+
+// count the pieces sub-diagonally
+// then return the number of identical pieces around a given piece
+// p1 & p2 & p3 & p4 are used to store extermities of these linked pieces
+static int count_sub_diagonally(int x, int y, int *p1, int * p2, int * p3, int * p4, int type)
+{
+    int count = 1;
+    int i = x, j = y;
     
-    // sub diagonal
-    count = 1;
-    i = x, j = y;
     while (i > 0 && j < SIZE - 1)
-        if (record_board[i - 1][j + 1] == BLACKPIECE || record_board[i - 1][j + 1] == BLACKTRIANGLE)
+        if (record_board[i - 1][j + 1] == type || record_board[i - 1][j + 1] == type + 2)
         {
             count++;
             i--;
@@ -108,13 +131,33 @@ int is_five_black(int x, int y)
         }
         else
             break;
+    *p1 = i - 1, *p3 = j + 1;
+
     i = x, j = y;
     while (i < SIZE - 1 && j > 0)
-        if (record_board[i + 1][j - 1] == BLACKPIECE || record_board[i + 1][j - 1] == BLACKTRIANGLE)
+        if (record_board[i + 1][j - 1] == type || record_board[i + 1][j - 1] == type + 2)
+        {
             count++;
+            i++;
+            j--;
+        }
         else
             break;
-    if (count == 5)
+    *p2 = i + 1, *p4 = j - 1;
+
+    return count;
+}
+
+
+int is_five_black(int x, int y)
+{
+    int count_h, count_v, count_md, count_sd;
+    int p1, p2, p3, p4;
+    count_h = count_horizontally(x, y, &p1, &p2, BLACKPIECE);
+    count_v = count_vertically(x, y, &p1, &p2, BLACKPIECE);
+    count_md = count_main_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
+    count_sd = count_sub_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
+    if (count_h == 5 || count_v == 5 || count_md == 5 || count_sd == 5)
         return 1;
     
     // no fives
@@ -123,102 +166,13 @@ int is_five_black(int x, int y)
 
 int is_five_white(int x, int y)
 {
-    int count;
-    int i, j;
-
-    // horizontal
-    count = 1;
-    i = y;
-    while (i > 0)
-        if (record_board[x][i - 1] == WHITEPIECE || record_board[x][i - 1] == WHITETRIANGLE)
-        {
-            count++;
-            i--;
-        }
-        else
-            break;
-    i = y;
-    while (i < SIZE - 1)
-        if (record_board[x][i + 1] == WHITEPIECE || record_board[x][i + 1] == WHITETRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    if (count >= 5)
-        return 1;
-
-
-    // vertical
-    count = 1;
-    i = x;
-    while (i > 0)
-        if (record_board[i - 1][y] == WHITEPIECE || record_board[i - 1][y] == WHITETRIANGLE)
-        {
-            count++;
-            i--;    
-        }
-        else
-            break;
-    i = x;
-    while (i < SIZE - 1)
-        if (record_board[i + 1][y] == WHITEPIECE || record_board[i + 1][y] == WHITETRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    if (count >= 5)
-        return 1;
-    
-    
-    // diagonal
-    // main diagonal
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j > 0)
-        if (record_board[i - 1][j - 1] == WHITEPIECE || record_board[i - 1][j - 1] == WHITETRIANGLE)
-        {
-            count++;
-            i--;
-            j--;
-        }
-        else
-            break;
-    i = x, j = y;
-    while (i < SIZE - 1 && j < SIZE - 1)
-        if (record_board[i + 1][j + 1] == WHITEPIECE || record_board[i + 1][j + 1] == WHITETRIANGLE)
-        {
-            count++;
-            i++;
-            j++;
-        }
-        else
-            break;
-    if (count >= 5)
-        return 1;
-    
-    // sub diagonal
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j < SIZE - 1)
-        if (record_board[i - 1][j + 1] == WHITEPIECE || record_board[i - 1][j + 1] == WHITETRIANGLE)
-        {
-            count++;
-            i--;
-            j++;
-        }
-        else
-            break;
-    i = x, j = y;
-    while (i < SIZE - 1 && j > 0)
-        if (record_board[i + 1][j - 1] == WHITEPIECE || record_board[i + 1][j - 1] == WHITETRIANGLE)
-            count++;
-        else
-            break;
-    if (count >= 5)
+    int count_h, count_v, count_md, count_sd;
+    int p1, p2, p3, p4;
+    count_h = count_horizontally(x, y, &p1, &p2, WHITEPIECE);
+    count_v = count_vertically(x, y, &p1, &p2, WHITEPIECE);
+    count_md = count_main_diagonally(x, y, &p1, &p2, &p3, &p4, WHITEPIECE);
+    count_sd = count_sub_diagonally(x, y, &p1, &p2, &p3, &p4, WHITEPIECE);
+    if (count_h == 5 || count_v == 5 || count_md == 5 || count_sd == 5)
         return 1;
     
     // no fives
@@ -227,140 +181,25 @@ int is_five_white(int x, int y)
 
 int is_over_line(int x, int y)
 {
-    int count;
-    int i, j;
-
-    // horizontal
-    count = 1;
-    i = y;
-    while (i > 0)
-        if (record_board[x][i - 1] == BLACKPIECE || record_board[x][i - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-        }
-        else
-            break;
-    i = y;
-    while (i < SIZE - 1)
-        if (record_board[x][i + 1] == BLACKPIECE || record_board[x][i + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    if (count > 5)
-        return 1;
-
-
-    // vertical
-    count = 1;
-    i = x;
-    while (i > 0)
-        if (record_board[i - 1][y] == BLACKPIECE || record_board[i - 1][y] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;    
-        }
-        else
-            break;
-    i = x;
-    while (i < SIZE - 1)
-        if (record_board[i + 1][y] == BLACKPIECE || record_board[i + 1][y] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    if (count > 5)
+    int count_h, count_v, count_md, count_sd;
+    int p1, p2, p3, p4;
+    count_h = count_horizontally(x, y, &p1, &p2, BLACKPIECE);
+    count_v = count_vertically(x, y, &p1, &p2, BLACKPIECE);
+    count_md = count_main_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
+    count_sd = count_sub_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
+    if (count_h > 5 || count_v > 5 || count_md > 5 || count_sd > 5)
         return 1;
     
-    
-    // diagonal
-    // main diagonal
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j > 0)
-        if (record_board[i - 1][j - 1] == BLACKPIECE || record_board[i - 1][j - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-            j--;
-        }
-        else
-            break;
-    i = x, j = y;
-    while (i < SIZE - 1 && j < SIZE - 1)
-        if (record_board[i + 1][j + 1] == BLACKPIECE || record_board[i + 1][j + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-            j++;
-        }
-        else
-            break;
-    if (count > 5)
-        return 1;
-    
-    // sub diagonal
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j < SIZE - 1)
-        if (record_board[i - 1][j + 1] == BLACKPIECE || record_board[i - 1][j + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-            j++;
-        }
-        else
-            break;
-    i = x, j = y;
-    while (i < SIZE - 1 && j > 0)
-        if (record_board[i + 1][j - 1] == BLACKPIECE || record_board[i + 1][j - 1] == BLACKTRIANGLE)
-            count++;
-        else
-            break;
-    if (count > 5)
-        return 1;
-    
-    // no overlines
+    // no fives
     return 0;
 }
 
 
 int is_active_three_horizontal(int x, int y)
 {
+    int p1, p2; // these variables are used to store extremities
+    int count = count_horizontally(x, y, &p1, &p2, BLACKPIECE);
     
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i;
-    // these variables are used to store extremities
-    int p1, p2;
-
-    // horizontal
-    count = 1;
-    i = y;
-    while (i > 0)
-        if (record_board[x][i - 1] == BLACKPIECE || record_board[x][i - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-        }
-        else
-            break;
-    p1 = i - 1;
-    i = y;
-    while (i < SIZE - 1)
-        if (record_board[x][i + 1] == BLACKPIECE || record_board[x][i + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    p2 = i + 1;
-
     /********************consecutive active three********************/
     if (count == 3)
     {
@@ -371,14 +210,14 @@ int is_active_three_horizontal(int x, int y)
             if (p1 == 0)
             {
                 if (record_board[x][p1] == 0 && record_board[x][p2] == 0 && record_board[x][p2 + 1] == 0
-                    && record_board[x][p2 + 2] != BLACKPIECE && record_board[x][p2 + 2] != BLACKTRIANGLE)   // modified here: 20210913
+                    && record_board[x][p2 + 2] != BLACKPIECE && record_board[x][p2 + 2] != BLACKTRIANGLE)
                     return 1;
             }
             // side II
             else if (p2 == SIZE - 1)
             {
                 if (record_board[x][p2] == 0 && record_board[x][p1] == 0 && record_board[x][p1 - 1] == 0
-                    && record_board[x][p1 - 2] != BLACKPIECE && record_board[x][p1 - 2] != BLACKTRIANGLE)   // modified here: 20210913
+                    && record_board[x][p1 - 2] != BLACKPIECE && record_board[x][p1 - 2] != BLACKTRIANGLE)
                     return 1;
             }
             // if the active three is in the middle of the chess board
@@ -535,33 +374,8 @@ int is_active_three_horizontal(int x, int y)
 
 int is_active_three_vertical(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i;
-    // these variables are used to store extremities
-    int p1, p2;
-
-    // vertical 
-    count = 1;
-    i = x;
-    while (i > 0)
-        if (record_board[i - 1][y] == BLACKPIECE || record_board[i - 1][y] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-        }
-        else
-            break;
-    p1 = i - 1;
-    i = x;
-    while (i < SIZE - 1)
-        if (record_board[i + 1][y] == BLACKPIECE || record_board[i + 1][y] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    p2 = i + 1;
+    int p1, p2; // these variables are used to store extremities
+    int count = count_vertically(x, y, &p1, &p2, BLACKPIECE);
 
     /********************consecutive active three********************/
     if (count == 3)
@@ -740,36 +554,8 @@ int is_active_three_vertical(int x, int y)
 
 int is_active_three_main_diagonal(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i, j;
-    // these variables are used to store extremities
-    int p1, p2, p3, p4;
-
-    // diagonal
-    // main diagonal
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j > 0)
-        if (record_board[i - 1][j - 1] == BLACKPIECE || record_board[i - 1][j - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-            j--;
-        }
-        else
-            break;
-    p1 = i - 1, p3 = j - 1;
-    i = x, j = y;
-    while (i < SIZE - 1 && j < SIZE - 1)
-        if (record_board[i + 1][j + 1] == BLACKPIECE || record_board[i + 1][j + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-            j++;
-        }
-        else
-            break;
-    p2 = i + 1, p4 = j + 1;
+    int p1, p2, p3, p4; // these variables are used to store extremities
+    int count = count_main_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
 
     /********************consecutive active three********************/
     if (count == 3)
@@ -995,34 +781,8 @@ int is_active_three_main_diagonal(int x, int y)
 
 int is_active_three_sub_diagonal(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i, j;
-    // these variables are used to store extremities
-    int p1, p2, p3, p4;
-
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j < SIZE - 1)
-        if (record_board[i - 1][j + 1] == BLACKPIECE || record_board[i - 1][j + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-            j++;
-        }
-        else
-            break;
-    p1 = i - 1, p3 = j + 1;
-    i = x, j = y;
-    while (i < SIZE - 1 && j > 0)
-        if (record_board[i + 1][j - 1] == BLACKPIECE || record_board[i + 1][j - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-            j--;
-        }
-        else
-            break;
-    p2 = i + 1, p4 = j - 1;
+    int p1, p2, p3, p4; // these variables are used to store extremities
+    int count = count_sub_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
 
     /********************consecutive active three********************/
     if (count == 3)
@@ -1265,33 +1025,8 @@ int is_over_one_active_three(int x, int y)
 
 int is_four_horizontal(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i;
-    // these variables are used to store extremities
-    int p1, p2;
-
-    // horizontal
-    count = 1;
-    i = y;
-    while (i > 0)
-        if (record_board[x][i - 1] == BLACKPIECE || record_board[x][i - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-        }
-        else
-            break;
-    p1 = i - 1;
-    i = y;
-    while (i < SIZE - 1)
-        if (record_board[x][i + 1] == BLACKPIECE || record_board[x][i + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    p2 = i + 1;
+    int p1, p2; // these variables are used to store extremities
+    int count = count_horizontally(x, y, &p1, &p2, BLACKPIECE);
 
     /********************consecutive four********************/
     if (count == 4)
@@ -1491,33 +1226,8 @@ int is_four_horizontal(int x, int y)
 
 int is_four_vertical(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i;
-    // these variables are used to store extremities
-    int p1, p2;
-
-    // vertical 
-    count = 1;
-    i = x;
-    while (i > 0)
-        if (record_board[i - 1][y] == BLACKPIECE || record_board[i - 1][y] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-        }
-        else
-            break;
-    p1 = i - 1;
-    i = x;
-    while (i < SIZE - 1)
-        if (record_board[i + 1][y] == BLACKPIECE || record_board[i + 1][y] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-        }
-        else
-            break;
-    p2 = i + 1;
+    int p1, p2; // these variables are used to store extremities
+    int count = count_vertically(x, y, &p1, &p2, BLACKPIECE);
 
     /********************consecutive four********************/
     if (count == 4)
@@ -1717,36 +1427,8 @@ int is_four_vertical(int x, int y)
 
 int is_four_main_diagonal(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i, j;
-    // these variables are used to store extremities
-    int p1, p2, p3, p4;
-
-    // diagonal
-    // main diagonal
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j > 0)
-        if (record_board[i - 1][j - 1] == BLACKPIECE || record_board[i - 1][j - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-            j--;
-        }
-        else
-            break;
-    p1 = i - 1, p3 = j - 1;
-    i = x, j = y;
-    while (i < SIZE - 1 && j < SIZE - 1)
-        if (record_board[i + 1][j + 1] == BLACKPIECE || record_board[i + 1][j + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-            j++;
-        }
-        else
-            break;
-    p2 = i + 1, p4 = j + 1;
+    int p1, p2, p3, p4; // these variables are used to store extremities
+    int count = count_main_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
 
     /********************consecutive four********************/
     if (count == 4)
@@ -1989,34 +1671,8 @@ int is_four_main_diagonal(int x, int y)
 
 int is_four_sub_diagonal(int x, int y)
 {
-    int count;  // 记录指定棋子周围相同棋子的数量
-    int i, j;
-    // these variables are used to store extremities
-    int p1, p2, p3, p4;
-
-    count = 1;
-    i = x, j = y;
-    while (i > 0 && j < SIZE - 1)
-        if (record_board[i - 1][j + 1] == BLACKPIECE || record_board[i - 1][j + 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i--;
-            j++;
-        }
-        else
-            break;
-    p1 = i - 1, p3 = j + 1;
-    i = x, j = y;
-    while (i < SIZE - 1 && j > 0)
-        if (record_board[i + 1][j - 1] == BLACKPIECE || record_board[i + 1][j - 1] == BLACKTRIANGLE)
-        {
-            count++;
-            i++;
-            j--;
-        }
-        else
-            break;
-    p2 = i + 1, p4 = j - 1;
+    int p1, p2, p3, p4; // these variables are used to store extremities
+    int count = count_sub_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
 
     /********************consecutive four********************/
     if (count == 4)

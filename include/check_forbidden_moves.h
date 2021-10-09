@@ -19,5 +19,6 @@ int is_active_three_sub_diagonal(int x, int y);
 int is_four_horizontal(int x, int y);
 int is_four_vertical(int x, int y);
 int is_four_main_diagonal(int x, int y);
-int is_four_sub_diagonal(int x, int y)
+int is_four_sub_diagonal(int x, int y);
+
 #endif
