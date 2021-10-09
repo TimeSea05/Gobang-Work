@@ -39,7 +39,7 @@ int main()
     drop_pieces(0);
     record_to_display_array();
     display_board();
-    if (is_four_horizontal(current_pos_x, current_pos_y))
+    if (is_two_fours_in_one_line(current_pos_x, current_pos_y))
         printf("Yes\n");
     else
         printf("No\n");

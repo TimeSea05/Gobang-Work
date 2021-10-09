@@ -1473,11 +1473,7 @@ int is_four_main_diagonal(int x, int y)
                 {
                     // special case II
                     if (p2 == SIZE - 1 || p4 == SIZE - 1)
-                    {
-                        if (!((record_board[p1][p3] == WHITEPIECE || record_board[p1][p3] == WHITETRIANGLE)
-                            && (record_board[p2][p4] == WHITEPIECE || record_board[p2][p4] == WHITETRIANGLE)))
-                            return 1;
-                    }
+                        return 1;
                     else
                     {
                         if ((record_board[p1][p3] == WHITEPIECE || record_board[p1][p3] == WHITETRIANGLE) && record_board[p2][p4] == 0 
@@ -1717,11 +1713,7 @@ int is_four_sub_diagonal(int x, int y)
                 {
                     // special case II
                     if (p2 == SIZE - 1 || p4 == 0)
-                    {
-                        if (!((record_board[p1][p3] == WHITEPIECE || record_board[p1][p3] == WHITETRIANGLE)
-                            && (record_board[p2][p4] == WHITEPIECE || record_board[p2][p4] == WHITETRIANGLE)))
-                            return 1;
-                    }
+                        return 1;
                     else
                     {
                         if ((record_board[p1][p3] == WHITEPIECE || record_board[p1][p3] == WHITETRIANGLE) && record_board[p2][p4] == 0 
@@ -1929,17 +1921,384 @@ int is_over_one_four(int x, int y)
     return 0;
 }
 
-int is_forbidden_move(int x, int y)
+int is_two_fours_in_one_line(int x, int y)
 {
-    if (is_five_black(x, y))
-        return 0;
+    int count_h, count_v, count_md, count_sd;
+    int p1, p2, p3, p4;
 
-    int res = 0;
-    res += is_over_line(x, y);
-    res += is_over_one_active_three(x, y);
-    res += is_over_one_four(x, y);
+    // horizontal
+    count_h = count_horizontally(x, y, &p1, &p2, BLACKPIECE);
+    if (count_h == 3)
+    {
+        if (p1 - 1 >= 0 && p2 + 1 < SIZE && record_board[x][p1] == 0 && record_board[x][p2] == 0
+            && (record_board[x][p1 - 1] == BLACKPIECE || record_board[x][p1 - 1] == BLACKTRIANGLE)
+            && (record_board[x][p2 + 1] == BLACKPIECE || record_board[x][p2 + 1] == BLACKTRIANGLE))
+        {
+            if (p1 - 2 >= 0)
+            {
+                if (record_board[x][p1 - 2] != BLACKPIECE && record_board[x][p1 - 2] != BLACKTRIANGLE)
+                {
+                    // middle of the board
+                    if (p2 + 2 < SIZE)
+                    {
+                        if (record_board[x][p2 + 2] != BLACKPIECE && record_board[x][p2 + 2] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // right side of the board
+                    else
+                        return 1;
+                }
+            }
+            // left side of the board
+            else if (record_board[x][p2 + 2] != BLACKPIECE && record_board[x][p2 + 2] != BLACKTRIANGLE)
+                return 1;
 
-    if (res > 0)
-        return 1;
+        }
+    }
+    else if (count_h == 2)
+    {
+        if (p1 - 2 >= 0 && p2 + 2 < SIZE && record_board[x][p1] == 0 && record_board[x][p2] == 0
+            && (record_board[x][p1 - 1] == BLACKPIECE || record_board[x][p1 - 1] == BLACKTRIANGLE)
+            && (record_board[x][p2 + 1] == BLACKPIECE || record_board[x][p2 + 1] == BLACKTRIANGLE)
+            && (record_board[x][p1 - 2] == BLACKPIECE || record_board[x][p1 - 2] == BLACKTRIANGLE)
+            && (record_board[x][p2 + 2] == BLACKPIECE || record_board[x][p2 + 2] == BLACKTRIANGLE))
+        {
+            if (p1 - 3 >= 0)
+            {
+                if (record_board[x][p1 - 3] != BLACKPIECE && record_board[x][p1 - 3] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 3 < SIZE)
+                    {
+                        if (record_board[x][p2 + 3] != BLACKPIECE && record_board[x][p2 + 3] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // right side of the board
+                    else
+                        return 1;
+                }
+            }
+            // left side of the board
+            else if (record_board[x][p2 + 3] != BLACKPIECE && record_board[x][p2 + 3] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+    else if (count_h == 1)
+    {
+        if (p1 - 3 >= 0 && p2 + 3 < SIZE && record_board[x][p1] == 0 && record_board[x][p2] == 0
+            && (record_board[x][p1 - 1] == BLACKPIECE || record_board[x][p1 - 1] == BLACKTRIANGLE)
+            && (record_board[x][p2 + 1] == BLACKPIECE || record_board[x][p2 + 1] == BLACKTRIANGLE)
+            && (record_board[x][p1 - 2] == BLACKPIECE || record_board[x][p1 - 2] == BLACKTRIANGLE)
+            && (record_board[x][p2 + 2] == BLACKPIECE || record_board[x][p2 + 2] == BLACKTRIANGLE)
+            && (record_board[x][p1 - 3] == BLACKPIECE || record_board[x][p1 - 3] == BLACKTRIANGLE)
+            && (record_board[x][p2 + 3] == BLACKPIECE || record_board[x][p2 + 3] == BLACKTRIANGLE))
+        {
+            if (p1 - 4 >= 0)
+            {
+                if (record_board[x][p1 - 4] != BLACKPIECE && record_board[x][p1 - 4] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 4 < SIZE)
+                    {
+                        if (record_board[x][p2 + 4] != BLACKPIECE && record_board[x][p2 + 4] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // right side of the board
+                    else
+                        return 1;
+                }
+            }
+            // left side of the board
+            else if (record_board[x][p2 + 4] != BLACKPIECE && record_board[x][p2 + 4] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+
+    // vertical
+    count_v = count_vertically(x, y, &p1, &p2, BLACKPIECE);
+    if (count_v == 3)
+    {
+        if (p1 - 1 >= 0 && p2 + 1 < SIZE && record_board[p1][y] == 0 && record_board[p2][y] == 0
+            && (record_board[p1 - 1][y] == BLACKPIECE || record_board[p1 - 1][y] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][y] == BLACKPIECE || record_board[p2 + 1][y] == BLACKTRIANGLE))
+        {
+            if (p1 - 2 >= 0)
+            {
+                if (record_board[p1 - 2][y] != BLACKPIECE && record_board[p1 - 2][y] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 2 < SIZE)
+                    {
+                        if (record_board[p2 + 2][y] != BLACKPIECE && record_board[p2 + 2][y] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom of the board
+                    else
+                        return 1;
+                }
+            }
+            // top of the board
+            else if (record_board[p2 + 2][y] != BLACKPIECE && record_board[p2 + 2][y] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+    else if (count_v == 2)
+    {
+        if (p1 - 2 >= 0 && p2 + 2 < SIZE && record_board[p1][y] == 0 && record_board[p2][y] == 0
+            && (record_board[p1 - 1][y] == BLACKPIECE || record_board[p1 - 1][y] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][y] == BLACKPIECE || record_board[p2 + 1][y] == BLACKTRIANGLE)
+            && (record_board[p1 - 2][y] == BLACKPIECE || record_board[p1 - 2][y] == BLACKTRIANGLE)
+            && (record_board[p2 + 2][y] == BLACKPIECE || record_board[p2 + 2][y] == BLACKTRIANGLE))
+        {
+            if (p1 - 3 >= 0)
+            {
+                if (record_board[p1 - 3][y] != BLACKPIECE && record_board[p1 - 3][y] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 3 < SIZE)
+                    {
+                        if (record_board[p2 + 3][y] != BLACKPIECE && record_board[p2 + 3][y] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom of the board
+                    else
+                        return 1;
+                }
+            }
+            // top of the board
+            else if (record_board[p2 + 3][y] != BLACKPIECE && record_board[p2 + 3][y] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+    else if (count_v == 1)
+    {
+        if (p1 - 3 >= 0 && p2 + 3 < SIZE && record_board[p1][y] == 0 && record_board[p2][y] == 0
+            && (record_board[p1 - 1][y] == BLACKPIECE || record_board[p1 - 1][y] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][y] == BLACKPIECE || record_board[p2 + 1][y] == BLACKTRIANGLE)
+            && (record_board[p1 - 2][y] == BLACKPIECE || record_board[p1 - 2][y] == BLACKTRIANGLE)
+            && (record_board[p2 + 2][y] == BLACKPIECE || record_board[p2 + 2][y] == BLACKTRIANGLE)
+            && (record_board[p1 - 3][y] == BLACKPIECE || record_board[p1 - 3][y] == BLACKTRIANGLE)
+            && (record_board[p2 + 3][y] == BLACKPIECE || record_board[p2 + 3][y] == BLACKTRIANGLE))
+        {
+            if (p1 - 4 >= 0)
+            {
+                if (record_board[p1 - 4][y] != BLACKPIECE && record_board[p1 - 4][y] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 4 < SIZE)
+                    {
+                        if (record_board[p2 + 4][y] != BLACKPIECE && record_board[p2 + 4][y] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom of the board
+                    else
+                        return 1;
+                }
+            }
+            // top of the board
+            else if (record_board[p2 + 4][y] != BLACKPIECE && record_board[p2 + 4][y] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+
+    count_md = count_main_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
+        if (count_md == 3)
+    {
+        if (p1 - 1 >= 0 && p2 + 1 < SIZE && p3 - 1 >= 0 && p4 + 1 < SIZE
+            && record_board[p1][p3] == 0 && record_board[p2][p4] == 0
+            && (record_board[p1 - 1][p3 - 1] == BLACKPIECE || record_board[p1 - 1][p3 - 1] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][p4 + 1] == BLACKPIECE || record_board[p2 + 1][p4 + 1] == BLACKTRIANGLE))
+        {
+            if (p1 - 2 >= 0 && p3 - 1 >= 0)
+            {
+                if (record_board[p1 - 2][p3 - 2] != BLACKPIECE && record_board[p1 - 2][p3 - 2] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 2 < SIZE && p4 + 2 < SIZE)
+                    {
+                        if (record_board[p2 + 2][p4 + 2] != BLACKPIECE && record_board[p2 + 2][p4 + 2] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom right of the board
+                    else
+                        return 1;
+                }
+            }
+            // top left of the board
+            else if (record_board[p2 + 2][p4 + 2] != BLACKPIECE && record_board[p2 + 2][p4 + 2] != BLACKTRIANGLE)
+                return 1;
+
+        }
+    }
+    else if (count_md == 2)
+    {
+        if (p1 - 2 >= 0 && p2 + 2 < SIZE && p3 - 2 >= 0 && p4 + 2 < SIZE
+            && record_board[p1][p3] == 0 && record_board[p2][p4] == 0
+            && (record_board[p1 - 1][p3 - 1] == BLACKPIECE || record_board[p1 - 1][p3 - 1] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][p4 + 1] == BLACKPIECE || record_board[p2 + 1][p4 + 1] == BLACKTRIANGLE)
+            && (record_board[p1 - 2][p3 - 2] == BLACKPIECE || record_board[p1 - 2][p3 - 2] == BLACKTRIANGLE)
+            && (record_board[p2 + 2][p4 + 2] == BLACKPIECE || record_board[p2 + 2][p4 + 2] == BLACKTRIANGLE))
+        {
+            if (p1 - 3 >= 0 && p3 - 3 >= 0)
+            {
+                if (record_board[p1 - 3][p3 - 3] != BLACKPIECE && record_board[p1 - 3][p3 - 3] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 3 < SIZE && p4 + 3 < SIZE)
+                    {
+                        if (record_board[p2 + 3][p4 + 3] != BLACKPIECE && record_board[p2 + 3][p4 + 3] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom right of the board
+                    else
+                        return 1;
+                }
+            }
+            // top left of the board
+            else if (record_board[p2 + 3][p4 + 3] != BLACKPIECE && record_board[p2 + 3][p4 + 3] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+    else if (count_md == 1)
+    {
+        if (p1 - 3 >= 0 && p2 + 3 < SIZE && p3 - 3 >= 0 && p4 + 3 < SIZE
+            && record_board[p1][p3] == 0 && record_board[p2][p4] == 0
+            && (record_board[p1 - 1][p3 - 1] == BLACKPIECE || record_board[p1 - 1][p3 - 1] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][p4 + 1] == BLACKPIECE || record_board[p2 + 1][p4 + 1] == BLACKTRIANGLE)
+            && (record_board[p1 - 2][p3 - 2] == BLACKPIECE || record_board[p1 - 2][p3 - 2] == BLACKTRIANGLE)
+            && (record_board[p2 + 2][p4 + 2] == BLACKPIECE || record_board[p2 + 2][p4 + 2] == BLACKTRIANGLE)
+            && (record_board[p1 - 3][p3 - 3] == BLACKPIECE || record_board[p1 - 3][p3 - 3] == BLACKTRIANGLE)
+            && (record_board[p2 + 3][p4 + 3] == BLACKPIECE || record_board[p2 + 3][p4 + 3] == BLACKTRIANGLE))
+        {
+            if (p1 - 4 >= 0 && p3 - 4 >= 0)
+            {
+                if (record_board[p1 - 4][p3 - 4] != BLACKPIECE && record_board[p1 - 4][p3 - 4] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 4 < SIZE && p4 + 4 < SIZE)
+                    {
+                        if (record_board[p2 + 4][p4 + 4] != BLACKPIECE && record_board[p2 + 4][p4 + 4] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom right of the board
+                    else
+                        return 1;
+                }
+            }
+            // top left of the board
+            else if (record_board[p2 + 4][p4 + 4] != BLACKPIECE && record_board[p2 + 4][p4 + 4] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+
+    count_sd = count_sub_diagonally(x, y, &p1, &p2, &p3, &p4, BLACKPIECE);
+    if (count_sd == 3)
+    {
+        if (p1 - 1 >= 0 && p2 + 1 < SIZE && p3 + 1 < SIZE && p4 - 1 >= 0
+            && record_board[p1][p3] == 0 && record_board[p2][p4] == 0
+            && (record_board[p1 - 1][p3 + 1] == BLACKPIECE || record_board[p1 - 1][p3 + 1] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][p4 - 1] == BLACKPIECE || record_board[p2 + 1][p4 - 1] == BLACKTRIANGLE))
+        {
+            if (p1 - 2 >= 0 && p3 + 2 < SIZE)
+            {
+                if (record_board[p1 - 2][p3 + 2] != BLACKPIECE && record_board[p1 - 2][p3 + 2] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 2 < SIZE && p4 - 2 >= 0)
+                    {
+                        if (record_board[p2 + 2][p4 - 2] != BLACKPIECE && record_board[p2 + 2][p4 - 2] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom left of the board
+                    else
+                        return 1;
+                }
+            }
+            // top right of the board
+            else if (record_board[p2 + 2][p4 - 2] != BLACKPIECE && record_board[p2 + 2][p4 - 2] != BLACKTRIANGLE)
+                return 1;
+
+        }
+    }
+    else if (count_sd == 2)
+    {
+        if (p1 - 2 >= 0 && p2 + 2 < SIZE && p3 + 2 < SIZE && p4 - 2 >= 0
+            && record_board[p1][p3] == 0 && record_board[p2][p4] == 0
+            && (record_board[p1 - 1][p3 + 1] == BLACKPIECE || record_board[p1 - 1][p3 + 1] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][p4 - 1] == BLACKPIECE || record_board[p2 + 1][p4 - 1] == BLACKTRIANGLE)
+            && (record_board[p1 - 2][p3 + 2] == BLACKPIECE || record_board[p1 - 2][p3 + 2] == BLACKTRIANGLE)
+            && (record_board[p2 + 2][p4 - 2] == BLACKPIECE || record_board[p2 + 2][p4 - 2] == BLACKTRIANGLE))
+        {
+            if (p1 - 3 >= 0 && p3 + 3 < SIZE)
+            {
+                if (record_board[p1 - 3][p3 + 3] != BLACKPIECE && record_board[p1 - 3][p3 + 3] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 3 < SIZE && p4 - 3 >= 0)
+                    {
+                        if (record_board[p2 + 3][p4 - 3] != BLACKPIECE && record_board[p2 + 3][p4 - 3] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom left of the board
+                    else
+                        return 1;
+                }
+            }
+            // top right of the board
+            else if (record_board[p2 + 3][p4 - 3] != BLACKPIECE && record_board[p2 + 3][p4 - 3] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+    else if (count_sd == 1)
+    {
+        if (p1 - 3 >= 0 && p2 + 3 < SIZE && p3 + 3 < SIZE && p4 - 3 >= 0
+            && record_board[p1][p3] == 0 && record_board[p2][p4] == 0
+            && (record_board[p1 - 1][p3 + 1] == BLACKPIECE || record_board[p1 - 1][p3 + 1] == BLACKTRIANGLE)
+            && (record_board[p2 + 1][p4 - 1] == BLACKPIECE || record_board[p2 + 1][p4 - 1] == BLACKTRIANGLE)
+            && (record_board[p1 - 2][p3 + 2] == BLACKPIECE || record_board[p1 - 2][p3 + 2] == BLACKTRIANGLE)
+            && (record_board[p2 + 2][p4 - 2] == BLACKPIECE || record_board[p2 + 2][p4 - 2] == BLACKTRIANGLE)
+            && (record_board[p1 - 3][p3 + 3] == BLACKPIECE || record_board[p1 - 3][p3 + 3] == BLACKTRIANGLE)
+            && (record_board[p2 + 3][p4 - 3] == BLACKPIECE || record_board[p2 + 3][p4 - 3] == BLACKTRIANGLE))
+        {
+            if (p1 - 4 >= 0 && p3 + 4 < SIZE)
+            {
+                if (record_board[p1 - 4][p3 + 4] != BLACKPIECE && record_board[p1 - 4][p3 + 4] != BLACKTRIANGLE)
+                {
+                    // center of the board
+                    if (p2 + 4 < SIZE && p4 - 4 >= 0)
+                    {
+                        if (record_board[p2 + 4][p4 - 4] != BLACKPIECE && record_board[p2 + 4][p4 - 4] != BLACKTRIANGLE)
+                            return 1;
+                    }
+                    // bottom left of the board
+                    else
+                        return 1;
+                }
+            }
+            // top right of the board
+            else if (record_board[p2 + 4][p4 - 4] != BLACKPIECE && record_board[p2 + 4][p4 - 4] != BLACKTRIANGLE)
+                return 1;
+        }
+    }
+    return 0;
+}
+
+int is_forbidden_move()
+{
+    for (int x = 0; x < SIZE; x++)
+        for (int y = 0; y < SIZE; y++)
+            if (record_board[x][y] == BLACKPIECE || record_board[x][y] == BLACKTRIANGLE)
+            {   
+                if (is_five_black(x, y))
+                    return 0;
+
+                int res = 0;
+                res += is_over_line(x, y);
+                res += is_over_one_active_three(x, y);
+                res += is_over_one_four(x, y);
+                res += is_two_fours_in_one_line(x, y);
+                if (res > 0)
+                    return 1;
+            }
     return 0;
 }

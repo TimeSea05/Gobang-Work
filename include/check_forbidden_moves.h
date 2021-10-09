@@ -1,13 +1,14 @@
 #ifndef CHECK_FORBIDDEN_MOVES_H_
 #define CHECK_FORBIDDEN_MOVES_H_
 
-int is_forbidden_move(int x, int y);
+int is_forbidden_move();
 
 int is_five_black(int x, int y);
 int is_five_white(int x, int y);
 int is_over_line(int x, int y);
 int is_over_one_active_three(int x, int y);
 int is_over_one_four(int x, int y);
+int is_two_fours_in_one_line(int x, int y);
 
 // detect active threes around assigned piece
 int is_active_three_horizontal(int x, int y);
