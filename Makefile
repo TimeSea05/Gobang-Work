@@ -66,6 +66,7 @@ OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
 all: $(OUTPUT) $(MAIN)
 	@echo Executing 'all' complete!
+	make clean
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
@@ -88,3 +89,4 @@ clean:
 run: all
 	./$(OUTPUTMAIN)
 	@echo Executing 'run: all' complete!
+	

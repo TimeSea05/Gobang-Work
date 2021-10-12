@@ -2,10 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "game_functions.h"
-#include "check_forbidden_moves.h"
+#include "check_forbidden_move.h"
 
 #define SIZE 15
 #define CHARSIZE 2
+
+#define HORIZONTAL 1
+#define HORIZONTAL_INV 2
+#define VERTICAL 3
+#define VERTICAL_INV 4
+#define MAIN_DIAGONAL 5
+#define MAIN_DIAGONAL_INV 6
+#define SUB_DIAGONAL 7
+#define SUB_DIAGONAL_INV 8
 
 extern char init_display_board_array[SIZE][SIZE * CHARSIZE + 1];
 extern char display_board_array[SIZE][SIZE * CHARSIZE + 1];
@@ -39,9 +48,9 @@ int main()
     drop_pieces(0);
     record_to_display_array();
     display_board();
-    if (is_two_fours_in_one_line(current_pos_x, current_pos_y))
-        printf("Yes\n");
-    else
-        printf("No\n");
+    
+    char * string = to_string(current_pos_x, current_pos_y, HORIZONTAL);
+    printf("%s\n", string);
+    free(string);
     return 0;
 }
