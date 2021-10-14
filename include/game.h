@@ -18,20 +18,13 @@ char * to_string_sub_diagonal_inv(int x, int y);
 int str_match(char * str_s, char * str_l);
 
 
-
-int match_active_three_black(int x, int y, int direction);
 int num_active_three_black(int x, int y);
-int match_active_three_white(int x, int y, int direction);
 int num_active_three_white(int x, int y);
 
-int match_active_four_black(int x, int y, int direction);
 int num_active_four(int x, int y);
-int match_active_four_white(int x, int y, int direction);
 int num_active_four_white(int x, int y);
 
-int match_dead_four_black(int x, int y, int direction);
 int num_dead_four_black(int x, int y);
-int match_dead_four_black(int x, int y, int direction);
 int num_dead_four_white(int x, int y);
 
 int is_five_black(int x, int y);
