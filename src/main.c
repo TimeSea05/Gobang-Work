@@ -2,55 +2,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "game_functions.h"
-#include "check_forbidden_move.h"
+#include "game.h"
 
-#define SIZE 15
-#define CHARSIZE 2
-
-#define HORIZONTAL 1
-#define HORIZONTAL_INV 2
-#define VERTICAL 3
-#define VERTICAL_INV 4
-#define MAIN_DIAGONAL 5
-#define MAIN_DIAGONAL_INV 6
-#define SUB_DIAGONAL 7
-#define SUB_DIAGONAL_INV 8
-
-extern char init_display_board_array[SIZE][SIZE * CHARSIZE + 1];
-extern char display_board_array[SIZE][SIZE * CHARSIZE + 1];
-extern int record_board[SIZE][SIZE];
-extern int current_pos_x;
-extern int current_pos_y;
+extern int latest_x, latest_y;
 
 int main()
 {
-    /* test program */
+    
     init_record_board();
     record_to_display_array();
     display_board();
     
-    int num_white, num_black;
-    printf("Please enter the numbers of white pieces and black pieces:\n");
-    scanf("%d%d", &num_white, &num_black);
-    getchar();
-    for (int i = 0; i < num_black - 1; i++)
+    char command;
+    printf("Black or white piece? (B/W)\n");
+    while (scanf("%c", &command) != EOF)
     {
-        drop_pieces(0);
-        record_to_display_array();
-        display_board();
+        getchar();
+        switch(command)
+        {
+            case 'B':
+                drop_pieces(0);
+                record_to_display_array();
+                display_board();
+                break;
+            case 'W':
+                drop_pieces(1);
+                record_to_display_array();
+                display_board();
+            default:
+                printf("Enter again!\n");
+        }
+        printf("Black or white piece? (B/W)\n");
     }
-    for (int i = 0; i < num_white; i++)
-    {
-        drop_pieces(1);
-        record_to_display_array();
-        display_board();
-    }
-    drop_pieces(0);
-    record_to_display_array();
-    display_board();
-    
-    char * string = to_string(current_pos_x, current_pos_y, HORIZONTAL);
-    printf("%s\n", string);
-    free(string);
+
+    int num = num_active_three_black(latest_x, latest_y);
+    printf("%d\n", num);
     return 0;
 }

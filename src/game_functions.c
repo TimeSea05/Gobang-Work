@@ -12,16 +12,54 @@
 #define WHITEPIECE 7
 #define WHITETRIANGLE 9
 
-extern char init_display_board_array[SIZE][SIZE * CHARSIZE + 1];
-extern char display_board_array[SIZE][SIZE * CHARSIZE + 1];
-extern int record_board[SIZE][SIZE];
-extern char play1_pic[];
-extern char play1_current_pic[];
-extern char play2_pic[];
-extern char play2_current_pic[];
-extern int current_pos_x;
-extern int current_pos_y;
-extern int previous_type;
+// the board uses GBK coding
+// each Chinese character occupies two bytes
+char init_display_board_array[SIZE][CHARSIZE * SIZE + 1] =
+{
+	"┏┯┯┯┯┯┯┯┯┯┯┯┯┯┓",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┠┼┼┼┼┼┼┼┼┼┼┼┼┼┨",
+	"┗┷┷┷┷┷┷┷┷┷┷┷┷┷┛"
+};
+
+// this array is used to show the board(along with pieces)
+char display_board_array[SIZE][SIZE * CHARSIZE + 1];
+// this array is used to record the board(along with pieces)
+int record_board[SIZE][SIZE];
+
+// the position of the piece placed just now
+int lastest_x = -1, lastest_y = -1;
+
+// the type of previous pieces
+// -1 for no pieces 
+// 0 for black pieces && 1 for white pieces
+int lastest_type = -1;
+
+// black pieces
+char play1_pic[] = "●"; 
+char play1_current_pic[] = "▲";
+// white pieces
+char play2_pic[] = "○"; 
+char play2_current_pic[] = "△";
+
+// the position of the piece placed just now
+int latest_x = -1, latest_y = -1;
+
+// the type of previous pieces
+// -1 for no pieces 
+// 0 for black pieces && 1 for white pieces
+int latest_type = -1;
 
 // initialize the chess board
 void init_record_board()
@@ -103,8 +141,8 @@ void display_board()
 void drop_pieces(int type)
 {
 	// if the game has begun, then change triangles to round pieces
-	if (current_pos_x != -1 && current_pos_y != -1)
-		record_board[current_pos_x][current_pos_y] = 1 + previous_type * 6;
+	if (latest_x != -1 && latest_y != -1)
+		record_board[latest_x][latest_y] = 1 + latest_type * 6;
 	
 	printf("请输入要下的棋子坐标(e.g. H1 or h1):\n");
 
@@ -129,9 +167,9 @@ void drop_pieces(int type)
 		{
 			// no pieces in this position
 			record_board[coordinate_x][coordinate_y] = BLACKTRIANGLE + type * 6;
-			current_pos_x = coordinate_x;
-			current_pos_y = coordinate_y;
-			previous_type = type;
+			latest_x = coordinate_x;
+			latest_y = coordinate_y;
+			latest_type = type;
 			getchar();
 			break;
 		}

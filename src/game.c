@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "check_forbidden_move.h"
+#include "game.h"
 
 #define SIZE 15
 #define BLACKPIECE 1
@@ -20,6 +20,48 @@
 #define SUB_DIAGONAL_INV 8
 
 extern int record_board[SIZE][SIZE];
+
+// active three
+char active_three_B_1[7] = "011100\0";
+char active_three_forbidden_1[8] = "0111001\0";
+char active_three_forbidden_2[8] = "1011100\0";
+
+char active_three_B_2[7] = "011010\0";
+char active_three_forbidden_3[8] = "1011010\0";
+char active_three_forbidden_4[8] = "0110101\0";
+
+char active_three_W_1[7] = "077700\0";
+char active_three_W_2[7] = "077070\0";
+
+// active four
+char active_four_B[] = "011110\0";
+char active_four_forbidden[] = "1011110\0";
+
+char active_four_W[] = "077770\0";
+
+// dead four
+char dead_four_B_1[] = "11011\0";
+char dead_four_forbidden_1[] = "111011\0";
+
+char dead_four_B_2[] = "11101\0";
+char dead_four_forbidden_2[] = "111101";
+char dead_four_forbidden_3[] = "111011";
+
+char dead_four_B_3[] = "711110\0";
+char dead_four_forbidden_4[] = "7111101\0";
+
+char dead_four_B_4[] = "10111100\0";
+char dead_four_B_5[] = "10111107\0";
+
+char dead_four_W_1[] = "77077\0";
+char dead_four_W_2[] = "77707\0";
+char dead_four_W_3[] = "177770\0";
+
+// five
+char five_B[] = "11111\0";
+char five_forbidden[] = "111111\0";
+
+char five_W[] = "77777\0";
 
 
 // transfer current game situation to string
@@ -261,12 +303,204 @@ int str_match(char * str_s, char * str_l)
     {
         for (j = 0; j < len_str_s; j++)
         {
-            if (i + j < len_str_l && str_s[j] != str_l[i + j])
+            if (i + j >= len_str_l || str_s[j] != str_l[i + j])
                 break;
         }
-        if (j == len_str_s - 1)
+        if (j == len_str_s)
             return 1;
     }
     return 0;
 }
 
+int match_active_three_black(int x, int y, int direction)
+{
+    char * str = to_string(x, y, direction);
+    if (str_match(active_three_B_1, str))
+    {
+        if (!str_match(active_three_forbidden_1, str)
+            && !str_match(active_three_forbidden_2, str))
+        {
+            free(str);
+            return 1;
+        }
+    }
+    else if (str_match(active_three_B_2, str))
+    {
+        if (!str_match(active_three_forbidden_3, str)
+            && !str_match(active_three_forbidden_4, str))
+        {
+            free(str);
+            return 1;
+        }
+    }
+    free(str);
+    return 0;
+}
+int num_active_three_black(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 7; direction += 2)
+        if (match_active_three_black(x, y, direction))
+            res++;
+        else if (match_active_three_black(x, y, direction + 1))
+            res++;
+    return res;
+}
+int match_active_three_white(int x, int y, int direction)
+{
+    char * str = to_string(x, y, direction);
+    if (str_match(active_three_W_1, str))
+    {
+        free(str);
+        return 1;
+    }
+    else if (str_match(active_three_W_2, str))
+    {
+        free(str);
+        return 1;
+    }
+    free(str);
+    return 0;
+}
+int num_active_three_white(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 7; direction += 2)
+        if (match_active_three_white(x, y, direction))
+            res++;
+        else if (match_active_three_white(x, y, direction + 1))
+            res++;
+    return res;
+}
+
+int match_active_four_black(int x, int y, int direction)
+{
+    char * str = to_string(x, y, direction);
+    if (str_match(active_four_B, str) && !str_match(active_four_forbidden, str))
+    {
+        free(str);
+        return 1;
+    }
+    free(str);
+    return 0;
+}
+int num_active_four(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 7; direction += 2)
+        if (match_active_four_black(x, y, direction))
+            res++;
+        else if (match_active_four_black(x, y, direction + 1))
+            res++;
+    return res;
+}
+int match_active_four_white(int x, int y, int direction)
+{
+    char * str = to_string(x, y, direction);
+    if (str_match(active_four_W, str))
+    {
+        free(str);
+        return 1;
+    }
+    free(str);
+    return 0;
+}
+int num_active_four_white(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 7; direction += 2)
+        if (match_active_four_white(x, y, direction))
+            res++;
+        else if (match_active_four_white(x, y, direction + 1))
+            res++;
+    return res;
+}
+
+int match_dead_four_black(int x, int y, int direction)
+{
+    char * str = to_string(x, y, direction);
+    if (str_match(dead_four_B_1, str) && !str_match(dead_four_forbidden_1, str))
+    {
+        free(str);
+        return 1;
+    }
+    else if (str_match(dead_four_B_2, str) && !str_match(dead_four_forbidden_2, str)
+            && str_match(dead_four_forbidden_3, str))
+    {
+        free(str);
+        return 1;
+    }
+    else if (str_match(dead_four_B_3, str) && !str_match(dead_four_forbidden_4, str))
+    {
+        free(str);
+        return 1;
+    }
+    else if (str_match(dead_four_B_4, str) || str_match(dead_four_B_5, str))
+    {
+        free(str);
+        return 1;
+    }
+    free(str);
+    return 1;
+}
+int num_dead_four_black(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 7; direction += 2)
+        if (match_dead_four_black(x, y, direction + 1))
+            res++;
+        else if (match_dead_four_black(x, y, direction + 1))
+            res++;
+    return res;
+}
+int match_dead_four_white(int x, int y, int direction)
+{
+    char * str = to_string(x, y, direction);
+    if (str_match(dead_four_W_1, str) || str_match(dead_four_W_2, str)
+        || str_match(dead_four_W_3, str))
+    {
+        free(str);
+        return 1;
+    }
+    free(str);
+    return 0;
+}
+int num_dead_four_white(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 7; direction += 2)
+        if (match_dead_four_white(x, y, direction))
+            res++;
+        else if (match_active_four_white(x, y, direction + 1))
+            res++;
+    return res;
+}
+
+int is_five_black(int x, int y)
+{
+    for (int direction = 1; direction <= 7; direction += 2)
+    {
+        char * str = to_string(x, y, direction);
+        if (str_match(five_B, str) && !str_match(five_forbidden, str))
+        {
+            free(str);
+            return 1;
+        }
+        free(str);
+    }
+    return 0;
+}
+int is_five_white(int x, int y)
+{
+    for (int direction = 1; direction <= 7; direction += 2)
+    {
+        char * str = to_string(x, y, direction);
+        if (str_match(five_W, str))
+        {
+            free(str);
+            return 1;
+        }
+        free(str);
+    }
+    return 1;
+}
