@@ -35,7 +35,7 @@ int main()
         printf("Black or white piece? (B/W)\n");
     }
 
-    int num = num_active_three_black(latest_x, latest_y);
+    int num = num_active_four_black(latest_x, latest_y);
     printf("%d\n", num);
     return 0;
 }
