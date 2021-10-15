@@ -16,6 +16,15 @@ int str_match(char * str_s, char * str_l);
 // reverse string
 char * str_reverse(char * str);
 
+int num_dead_two_black(int x, int y);
+int num_dead_two_white(int x, int y);
+
+int num_active_two_black(int x, int y);
+int num_active_two_white(int x, int y);
+
+int num_dead_three_black(int x, int y);
+int num_dead_three_white(int x, int y);
+
 int num_active_three_black(int x, int y);
 int num_active_three_white(int x, int y);
 

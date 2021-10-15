@@ -18,6 +18,49 @@
 extern int record_board[SIZE][SIZE];
 
 // s represents 'symmetry'
+
+// dead two black
+char dead_two_B_1[] = "700111\0";
+char dead_two_B_2[] = "710100\0";
+char dead_two_B_3[] = "710010\0";
+char dead_two_B_4[] = "10001\0";
+
+// dead two white
+char dead_two_W_1[] = "100777\0";
+char dead_two_W_2[] = "170700\0";
+char dead_two_W_3[] = "170070\0";
+char dead_two_W_4[] = "70007\0";
+
+// active two black
+char active_two_B_1[] = "001100\0";
+char active_two_B_2[] = "010101\0";
+
+// active two white
+char active_two_W_1[] = "007700\0";
+char active_two_W_2[] = "070707\0";
+
+// dead three black
+char dead_three_B_1[] = "11001\0";
+char s_dead_three_B_1[] = "110011\0";
+char s_dead_three_B_1_a[] = "10011001\0";
+
+char dead_three_B_2[] = "10101\0";
+char dead_three_B_3[] = "7011107\0";
+char dead_three_B_4[] = "711100\0";
+char dead_three_B_5[] = "711010\0";
+char dead_three_B_6[] = "710110\0";
+
+// dead three white
+char dead_three_W_1[] = "77007\0";
+char s_dead_three_W_1[] = "770077\0";
+char s_dead_three_W_1_a[] = "70077007\0";
+
+char dead_three_W_2[] = "70707\0";
+char dead_three_W_3[] = "1077701\0";
+char dead_three_W_4[] = "177700\0";
+char dead_three_W_5[] = "177070\0";
+char dead_three_W_6[] = "170770\0";
+
 // active three black
 char active_three_B_1[] = "011100\0";
 char s_active_three_B_1[] = "0011100\0";
@@ -235,6 +278,185 @@ int str_match(char * str_s, char * str_l)
     return res;
 }
 
+int num_dead_two_black(int x, int y)
+{
+    int res = 0;
+
+    char * r_dead_two_B_1 = str_reverse(dead_two_B_1);
+    char * r_dead_two_B_2 = str_reverse(dead_two_B_2);
+    char * r_dead_two_B_3 = str_reverse(dead_two_B_3);
+    char * r_dead_two_B_4 = str_reverse(dead_two_B_4);
+
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+
+        res += str_match(dead_two_B_1, str);
+        res += str_match(dead_two_B_2, str);
+        res += str_match(dead_two_B_3, str);
+        res += str_match(dead_two_B_4, str);
+
+        res += str_match(r_dead_two_B_1, str);
+        res += str_match(r_dead_two_B_2, str);
+        res += str_match(r_dead_two_B_3, str);
+        res += str_match(r_dead_two_B_4, str);
+
+        free(str);
+    }
+    free(r_dead_two_B_1);
+    free(r_dead_two_B_2);
+    free(r_dead_two_B_3);
+    free(r_dead_two_B_4);
+
+    return res;
+}
+int num_dead_two_white(int x, int y)
+{
+    int res = 0;
+
+    char * r_dead_two_W_1 = str_reverse(dead_two_W_1);
+    char * r_dead_two_W_2 = str_reverse(dead_two_W_2);
+    char * r_dead_two_W_3 = str_reverse(dead_two_W_3);
+    char * r_dead_two_W_4 = str_reverse(dead_two_W_4);
+
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+
+        res += str_match(dead_two_W_1, str);
+        res += str_match(dead_two_W_2, str);
+        res += str_match(dead_two_W_3, str);
+        res += str_match(dead_two_W_4, str);
+
+        res += str_match(r_dead_two_W_1, str);
+        res += str_match(r_dead_two_W_2, str);
+        res += str_match(r_dead_two_W_3, str);
+        res += str_match(r_dead_two_W_4, str);
+
+        free(str);
+    }
+    free(r_dead_two_W_1);
+    free(r_dead_two_W_2);
+    free(r_dead_two_W_3);
+    free(r_dead_two_W_4);
+
+    return res;
+}
+
+int num_active_two_black(int x, int y)
+{
+    int res = 0;
+
+    char * r_active_two_B_2 = str_reverse(active_two_B_2);
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+        res += str_match(active_two_B_1, str);
+        res += str_match(active_two_B_2, str);
+        res += str_match(r_active_two_B_2, str);
+        free(str);
+    }
+    free(r_active_two_B_2);
+    return res;
+}
+int num_active_two_white(int x, int y)
+{
+    int res = 0;
+
+    char * r_active_two_W_2 = str_reverse(active_two_W_2);
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+        res += str_match(active_two_W_1, str);
+        res += str_match(active_two_W_2, str);
+        res += str_match(r_active_two_W_2, str);
+        free(str);
+    }
+    free(r_active_two_W_2);
+    return res;
+}
+
+int num_dead_three_black(int x, int y)
+{
+    int res = 0;
+
+    char * r_dead_three_B_1 = str_reverse(dead_three_B_1);
+    char * r_dead_three_B_4 = str_reverse(dead_three_B_4);
+    char * r_dead_three_B_5 = str_reverse(dead_three_B_5);
+    char * r_dead_three_B_6 = str_reverse(dead_three_B_6);
+
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+
+        res += str_match(dead_three_B_1, str);
+        res += str_match(dead_three_B_2, str);
+        res += str_match(dead_three_B_3, str);
+        res += str_match(dead_three_B_4, str);
+        res += str_match(dead_three_B_5, str);
+        res += str_match(dead_three_B_6, str);
+
+        // reverse
+        res += str_match(r_dead_three_B_1, str);
+        res += str_match(r_dead_three_B_4, str);
+        res += str_match(r_dead_three_B_5, str);
+        res += str_match(r_dead_three_B_6, str);
+
+        // symmetry
+        res -= str_match(s_dead_three_B_1, str);
+        res -= str_match(s_dead_three_B_1_a, str);
+
+        free(str);
+    }
+
+    free(r_dead_three_B_1);
+    free(r_dead_three_B_4);
+    free(r_dead_three_B_5);
+    free(r_dead_three_B_6);
+
+    return res;
+}
+int num_dead_three_white(int x, int y)
+{
+    int res = 0;
+
+    char * r_dead_three_W_1 = str_reverse(dead_three_W_1);
+    char * r_dead_three_W_4 = str_reverse(dead_three_W_4);
+    char * r_dead_three_W_5 = str_reverse(dead_three_W_5);
+    char * r_dead_three_W_6 = str_reverse(dead_three_W_6);
+
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+
+        res += str_match(dead_three_W_1, str);
+        res += str_match(dead_three_W_2, str);
+        res += str_match(dead_three_W_3, str);
+        res += str_match(dead_three_W_4, str);
+        res += str_match(dead_three_W_5, str);
+        res += str_match(dead_three_W_6, str);
+
+        // reverse
+        res += str_match(r_dead_three_W_1, str);
+        res += str_match(r_dead_three_W_4, str);
+        res += str_match(r_dead_three_W_5, str);
+        res += str_match(r_dead_three_W_6, str);
+
+        // symmetry
+        res -= str_match(s_dead_three_W_1, str);
+        res -= str_match(s_dead_three_W_1_a, str);
+
+        free(str);
+    }
+
+    free(r_dead_three_W_1);
+    free(r_dead_three_W_4);
+    free(r_dead_three_W_5);
+    free(r_dead_three_W_6);
+
+    return res;
+}
+
 int num_active_three_black(int x, int y)
 {
     int res = 0;
@@ -257,6 +479,7 @@ int num_active_three_black(int x, int y)
         res -= str_match(active_three_forbidden_3, str);
         res -= str_match(active_three_forbidden_4, str);
 
+        // reverse
         res += str_match(r_active_three_B_1, str);
         res -= str_match(r_active_three_forbidden_1, str);
         res -= str_match(r_active_three_forbidden_2, str);
@@ -299,6 +522,7 @@ int num_active_three_white(int x, int y)
         res += str_match(active_three_W_1, str);
         res += str_match(active_three_W_2, str);
 
+        //reverse
         res += str_match(r_active_three_W_1, str);
         res += str_match(r_active_three_W_2, str);
 
@@ -314,6 +538,7 @@ int num_active_three_white(int x, int y)
 
     return res;
 }
+
 int num_active_four_black(int x, int y)
 {
     int res = 0;
@@ -325,7 +550,10 @@ int num_active_four_black(int x, int y)
         res += str_match(active_four_B, str);
         res -= str_match(active_four_forbidden, str);
         
+        // reverse
         res -= str_match(r_active_four_forbidden, str);
+
+        // symmetry
         res += str_match(s_active_four_forbidden, str);
         free(str);
     }
@@ -420,7 +648,6 @@ int num_dead_four_black(int x, int y)
 
     return res;
 }
-
 int num_dead_four_white(int x, int y)
 {
     int res = 0;
@@ -482,3 +709,4 @@ int is_five_white(int x, int y)
     }
     return 1;
 }
+
