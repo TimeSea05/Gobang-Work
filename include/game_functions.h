@@ -15,5 +15,5 @@ void display_board();
 void drop_pieces(int type);
 
 // detect winnership
-int check_for_winnership();
+int game_win();
 #endif

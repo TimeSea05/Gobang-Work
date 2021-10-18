@@ -18,6 +18,11 @@
 extern int record_board[SIZE][SIZE];
 
 // s represents 'symmetry'
+/* 
+   for some of the cases, there is no need to give a corresponding symmetrical case
+   because that will cause the string to be two long
+   and that case rarely happens
+*/
 
 // dead two black
 char dead_two_B_1[] = "700111\0";
@@ -140,6 +145,7 @@ char * to_string_horizontal(int x, int y)
             string_h[i] = '7';
     }
     strcat(string_h, "\0");
+    y++;    // useless statement to avoid warnings from the complier
     return string_h;
 }
 char * to_string_vertical(int x, int y)
@@ -155,6 +161,7 @@ char * to_string_vertical(int x, int y)
             string_v[i] = '7';
     }
     strcat(string_v, "\0");
+    x++;    // useless statement to avoid warnings from the complier
     return string_v;
 }
 char * to_string_main_diagonal(int x, int y)
@@ -466,7 +473,7 @@ int num_active_three_black(int x, int y)
 
     char * r_active_three_B_2 = str_reverse(active_three_B_2);
     char * r_active_three_forbidden_3 = str_reverse(active_three_forbidden_3);
-    char * r_active_three_forbidden_4 = str_reverse(r_active_three_forbidden_4);
+    char * r_active_three_forbidden_4 = str_reverse(active_three_forbidden_4);
 
     for (int direction = 1; direction <= 4; direction++)
     {
@@ -707,6 +714,5 @@ int is_five_white(int x, int y)
         }
         free(str);
     }
-    return 1;
+    return 0;
 }
-

@@ -29,13 +29,17 @@ int main()
                 drop_pieces(1);
                 record_to_display_array();
                 display_board();
+                break;
             default:
                 printf("Enter again!\n");
+                break;
         }
         printf("Black or white piece? (B/W)\n");
+        if (game_win())
+            break;
     }
 
-    int num = num_active_four_black(latest_x, latest_y);
+    int num = num_active_three_black(latest_x, latest_y);
     printf("%d\n", num);
     return 0;
 }
