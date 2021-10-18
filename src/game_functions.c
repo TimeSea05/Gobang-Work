@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "game_functions.h"
+#include "game.h"
 
 #define SIZE 15
 #define CHARSIZE 2
@@ -39,12 +40,12 @@ char display_board_array[SIZE][SIZE * CHARSIZE + 1];
 int record_board[SIZE][SIZE];
 
 // the position of the piece placed just now
-int lastest_x = -1, lastest_y = -1;
+int latest_x = -1, latest_y = -1;
 
 // the type of previous pieces
 // -1 for no pieces 
 // 0 for black pieces && 1 for white pieces
-int lastest_type = -1;
+int latest_type = -1;
 
 // black pieces
 char play1_pic[] = "●"; 
@@ -183,75 +184,17 @@ void drop_pieces(int type)
 }
 
 // detect winnership
-int check_for_winnership()
+int game_win()
 {
-	// 横着
-	for (int i = 0; i < SIZE; i++)
-		for (int j = 0; j <= SIZE - 5; j++)
-			if (record_board[i][j] != 0)
-			{
-				int index = j;
-				while (++index < j + 5)
-				{
-					if (record_board[i][index] != record_board[i][j]
-						&& abs(record_board[i][index] - record_board[i][j]) != 2)
-						break;
-				}
-				if (index == j + 5 && record_board[i][j] < 5)
-					return 1;	// 黑棋
-				else if (index == j + 5 && record_board[i][j] > 5)
-					return 7;	// 白棋
-				else
-					j = index - 1;
-			}
-	// 竖着
-	for (int j = 0; j < SIZE; j++)
-		for (int i = 0; i <= SIZE - 5; i++)
-			if (record_board[i][j] != 0)
-			{
-				int index = i;
-				while (++index < i + 5)
-				{
-					if (record_board[index][j] != record_board[i][j]
-						&& abs(record_board[index][j] - record_board[i][j]) != 2)
-						break;
-				}
-				if (index == i + 5 && record_board[i][j] < 5)
-					return 1;
-				else if (index == i + 5 && record_board[i][j] > 5)
-					return 7;
-				else
-					i = index - 1;
-			}
-	// 斜着
-	// 主对角线
-	for (int i = 0; i <= SIZE - 5; i++)
-		for (int j = 0; j <= SIZE - 5; j++)
-			if (record_board[i][j] != 0)
-			{
-				int count = 1;
-				while (record_board[i + count][j + count] == record_board[i][j]
-					   || abs(record_board[i + count][j + count] - record_board[i][j]) == 2)
-					count++;
-				if (count == 5 && record_board[i][j] < 5)
-					return 1;
-				else if (count == 5 && record_board[i][j] > 5)
-					return 7;
-			}
-	// 次对角线
-	for (int i = 4; i < SIZE; i++)
-		for (int j = 0; j <= SIZE - 5; j++)
-			if (record_board[i][j] != 0)
-			{
-				int count = 1;
-				while (record_board[i - count][j + count] == record_board[i][j]
-					   || abs(record_board[i - count][j + count] - record_board[i][j]) == 2)
-					count++;
-				if (count == 5 && record_board[i][j] < 5)
-					return 1;
-				else if (count == 5 && record_board[i][j] > 5)
-					return 7;
-			}
-	
+	if (is_five_black(latest_x, latest_y))
+	{
+		printf("Black wins!\n");
+		return 1;
+	}
+	else if (is_five_white(latest_x, latest_y))
+	{
+		printf("White wins!\n");
+		return 1;
+	}
 	return 0;
 }
