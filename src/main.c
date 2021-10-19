@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include "game_functions.h"
 #include "game.h"
+#include "ai.h"
 
 extern int latest_x, latest_y;
 
 int main()
 {
-    
     init_record_board();
     record_to_display_array();
     display_board();
@@ -38,8 +38,7 @@ int main()
         if (game_win())
             break;
     }
-
-    int num = num_active_three_black(latest_x, latest_y);
-    printf("%d\n", num);
+    int res = evaluate(latest_x - 1, latest_y + 1, 1);
+    printf("%d\n", res);
     return 0;
 }

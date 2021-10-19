@@ -36,4 +36,6 @@ int num_dead_four_white(int x, int y);
 
 int is_five_black(int x, int y);
 int is_five_white(int x, int y);
+
+int num_overline(int x, int y);
 #endif

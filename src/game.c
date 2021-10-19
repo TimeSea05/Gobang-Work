@@ -25,13 +25,11 @@ extern int record_board[SIZE][SIZE];
 */
 
 // dead two black
-char dead_two_B_1[] = "700111\0";
 char dead_two_B_2[] = "710100\0";
 char dead_two_B_3[] = "710010\0";
 char dead_two_B_4[] = "10001\0";
 
 // dead two white
-char dead_two_W_1[] = "100777\0";
 char dead_two_W_2[] = "170700\0";
 char dead_two_W_3[] = "170070\0";
 char dead_two_W_4[] = "70007\0";
@@ -289,7 +287,6 @@ int num_dead_two_black(int x, int y)
 {
     int res = 0;
 
-    char * r_dead_two_B_1 = str_reverse(dead_two_B_1);
     char * r_dead_two_B_2 = str_reverse(dead_two_B_2);
     char * r_dead_two_B_3 = str_reverse(dead_two_B_3);
     char * r_dead_two_B_4 = str_reverse(dead_two_B_4);
@@ -298,19 +295,16 @@ int num_dead_two_black(int x, int y)
     {
         char * str = to_string(x, y, direction);
 
-        res += str_match(dead_two_B_1, str);
         res += str_match(dead_two_B_2, str);
         res += str_match(dead_two_B_3, str);
         res += str_match(dead_two_B_4, str);
 
-        res += str_match(r_dead_two_B_1, str);
         res += str_match(r_dead_two_B_2, str);
         res += str_match(r_dead_two_B_3, str);
         res += str_match(r_dead_two_B_4, str);
 
         free(str);
     }
-    free(r_dead_two_B_1);
     free(r_dead_two_B_2);
     free(r_dead_two_B_3);
     free(r_dead_two_B_4);
@@ -321,7 +315,6 @@ int num_dead_two_white(int x, int y)
 {
     int res = 0;
 
-    char * r_dead_two_W_1 = str_reverse(dead_two_W_1);
     char * r_dead_two_W_2 = str_reverse(dead_two_W_2);
     char * r_dead_two_W_3 = str_reverse(dead_two_W_3);
     char * r_dead_two_W_4 = str_reverse(dead_two_W_4);
@@ -330,19 +323,16 @@ int num_dead_two_white(int x, int y)
     {
         char * str = to_string(x, y, direction);
 
-        res += str_match(dead_two_W_1, str);
         res += str_match(dead_two_W_2, str);
         res += str_match(dead_two_W_3, str);
         res += str_match(dead_two_W_4, str);
 
-        res += str_match(r_dead_two_W_1, str);
         res += str_match(r_dead_two_W_2, str);
         res += str_match(r_dead_two_W_3, str);
         res += str_match(r_dead_two_W_4, str);
 
         free(str);
     }
-    free(r_dead_two_W_1);
     free(r_dead_two_W_2);
     free(r_dead_two_W_3);
     free(r_dead_two_W_4);
@@ -715,4 +705,15 @@ int is_five_white(int x, int y)
         free(str);
     }
     return 0;
+}
+
+int num_overline(int x, int y)
+{
+    int res = 0;
+    for (int direction = 1; direction <= 4; direction++)
+    {
+        char * str = to_string(x, y, direction);
+        res += str_match(five_forbidden, str);
+    }
+    return res;
 }

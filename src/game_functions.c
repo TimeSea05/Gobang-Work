@@ -54,13 +54,6 @@ char play1_current_pic[] = "▲";
 char play2_pic[] = "○"; 
 char play2_current_pic[] = "△";
 
-// the position of the piece placed just now
-int latest_x = -1, latest_y = -1;
-
-// the type of previous pieces
-// -1 for no pieces 
-// 0 for black pieces && 1 for white pieces
-int latest_type = -1;
 
 // initialize the chess board
 void init_record_board()
@@ -145,7 +138,7 @@ void drop_pieces(int type)
 	if (latest_x != -1 && latest_y != -1)
 		record_board[latest_x][latest_y] = 1 + latest_type * 6;
 	
-	printf("请输入要下的棋子坐标(e.g. H1 or h1):\n");
+	printf("Please enter the position of the piece(e.g. H1 or h1):\n");
 
 	while (1)
 	{
@@ -176,7 +169,7 @@ void drop_pieces(int type)
 		}
 		else
 		{
-			printf("此位置已被其他棋子占用！请重新输入：\n");
+			printf("There is already a piece in this position. Enter again!\n");
 			getchar();
 			continue;
 		}
