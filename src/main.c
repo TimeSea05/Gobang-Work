@@ -5,7 +5,13 @@
 #include "game.h"
 #include "ai.h"
 
+#define BLACKPIECE 1
+#define WHITEPIECE 7
+#define SIZE 15
+
 extern int latest_x, latest_y;
+extern int next_point_x, next_point_y;
+extern int record_board[SIZE][SIZE];
 
 int main()
 {
@@ -13,32 +19,20 @@ int main()
     record_to_display_array();
     display_board();
     
-    char command;
-    printf("Black or white piece? (B/W)\n");
-    while (scanf("%c", &command) != EOF)
+    while(1)
     {
-        getchar();
-        switch(command)
-        {
-            case 'B':
-                drop_pieces(0);
-                record_to_display_array();
-                display_board();
-                break;
-            case 'W':
-                drop_pieces(1);
-                record_to_display_array();
-                display_board();
-                break;
-            default:
-                printf("Enter again!\n");
-                break;
-        }
-        printf("Black or white piece? (B/W)\n");
+        drop_pieces(0);
+        record_to_display_array();
+        display_board();
+        if (game_win())
+            break;
+         negative_max(WHITEPIECE, 3, -99999999, 99999999);
+        record_board[next_point_x][next_point_y] = WHITEPIECE;
+        latest_x = next_point_x, latest_y = next_point_y;
+        record_to_display_array();
+        display_board();
         if (game_win())
             break;
     }
-    int res = evaluate(latest_x - 1, latest_y + 1, 1);
-    printf("%d\n", res);
     return 0;
 }

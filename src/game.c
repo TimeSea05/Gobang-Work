@@ -176,7 +176,7 @@ char * to_string_main_diagonal(int x, int y)
                 string_md[i] = '1';
             else if (record_board[i][y - x + i] == WHITEPIECE
                     || record_board[i][y - x + i] == WHITETRIANGLE)
-                string_md[i] = '1';
+                string_md[i] = '7';
         }
     else
         for (int i = 0; i < length; i++)
@@ -188,7 +188,7 @@ char * to_string_main_diagonal(int x, int y)
                 string_md[i] = '1';
             else if (record_board[x - y + i][i] == WHITEPIECE
                     || record_board[x - y + i][i] == WHITETRIANGLE)
-                string_md[i] = '1';
+                string_md[i] = '7';
         }
     strcat(string_md, "\0");
     return string_md;

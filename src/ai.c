@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "game.h"
 #include "game_functions.h"
 #include "ai.h"
@@ -16,11 +17,14 @@
 #define FIVE 99999999
 #define FORBIDDEN -99999999
 
+#define DEPTH 3
 extern int latest_x, latest_y;
 extern int record_board[SIZE][SIZE];
 
 #define NOT_ALL_CROSS_BORDER \
     latest_x - i >= 0 || latest_x + i < SIZE || latest_y - i >= 0 || latest_y + i < SIZE
+
+int next_point_x = 0, next_point_y = 0;
 
 int calculate_mark(int x, int y, int type)
 {
@@ -53,16 +57,19 @@ int calculate_mark(int x, int y, int type)
 int evaluate(int x, int y, int type)
 {
     // 评估的方式：计算放置棋子前后在坐标(x,y)处产生的分数差
-    // 此处已经假定(x,y)处没有棋子
+    // 此处已经假定(x,y)处有棋子
     // 'o' represents 'original', 'n' represents 'now'
     int black_mark_o = calculate_mark(x, y, BLACKPIECE);
     int white_mark_o = calculate_mark(x, y, WHITEPIECE);
-    record_board[x][y] = type;
+    record_board[x][y] = EMPTY;
     int black_mark_n = calculate_mark(x, y, BLACKPIECE);
     int white_mark_n = calculate_mark(x, y, WHITEPIECE);
-    record_board[x][y] = EMPTY;
-    return (black_mark_n - black_mark_o) + (white_mark_o - white_mark_n);
+    record_board[x][y] = type;
+    if (type == BLACKPIECE)
+        return (black_mark_o - black_mark_n) - (white_mark_o - white_mark_n);
+    return (white_mark_o - white_mark_n) - (black_mark_o - black_mark_n);
 }
+
 int is_forbidden(int x, int y)
 {
     int res = 0;
@@ -79,43 +86,158 @@ int is_forbidden(int x, int y)
     return 0;
 }
 
-// int negative_max(int x, int y, int is_ai, int depth, int alpha, int beta)
-int negative_max(int x, int y)
+int has_neighbor(int x, int y)
+{
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++)
+        {
+            if (i == 0 && j == 0)
+                continue;
+            if (x + i < 0 || x + i >= SIZE || y + j < 0 || y + j >= SIZE)
+                continue;
+            if (!record_board[x + i][y + j] == EMPTY)
+                return 1;
+        }
+    return 0;
+}
+
+int trans_type(int type)
+{
+    if (type == BLACKPIECE)
+        return WHITEPIECE;
+    return BLACKPIECE;
+}
+// type: BLACKPIECE or WHITEPIECE
+
+int negative_max(int type, int depth, int alpha, int beta)
+{
+    if (game_win() || depth == 0)
+        return evaluate(latest_x, latest_y, trans_type(type));
+    for (int i = 1; NOT_ALL_CROSS_BORDER; i++)
+    {
+        for (int j = -i; j <= i; j++)
+        {
+            if (latest_x - i >= 0 && latest_y + j >= 0 && latest_y + j < SIZE
+                && record_board[latest_x - i][latest_y + j] == EMPTY
+                && has_neighbor(latest_x - i, latest_y + j))
+            {
+                int latest_x_copy = latest_x, latest_y_copy = latest_y;
+                latest_x = latest_x - i, latest_y = latest_y + j;
+                record_board[latest_x][latest_y] = type;
+                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
+                record_board[latest_x][latest_y] = EMPTY;
+                if (value > alpha)
+                {
+                    alpha = value;
+                    if (depth == DEPTH)
+                        next_point_x = latest_x, next_point_y = latest_y;
+                    if (value >= beta)
+                        return beta;
+                    alpha = value;
+                }
+                latest_x = latest_x_copy, latest_y = latest_y_copy;
+            }
+            if (latest_x + i < SIZE && latest_y + j >= 0 && latest_y + j < SIZE
+                && record_board[latest_x + i][latest_y + j] == EMPTY
+                && has_neighbor(latest_x + i, latest_y + j))
+            {
+                int latest_x_copy = latest_x, latest_y_copy = latest_y;
+                latest_x = latest_x + i, latest_y = latest_y + j;
+                record_board[latest_x][latest_y] = type;
+                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
+                record_board[latest_x][latest_y] = EMPTY;
+                if (value > alpha)
+                {
+                    alpha = value;
+                    if (depth == DEPTH)
+                        next_point_x = latest_x, next_point_y = latest_y;
+                    if (value >= beta)
+                        return beta;
+                    alpha = value;
+                }
+                latest_x = latest_x_copy, latest_y = latest_y_copy;
+            }
+        }
+        for (int k = -i + 1; k <= i - 1; k++)
+        {
+            if (latest_x + k >= 0 && latest_x + k < SIZE && latest_y - i >= 0
+                && record_board[latest_x + k][latest_y - i] == EMPTY
+                && has_neighbor(latest_x + k, latest_y - i))
+            {
+                int latest_x_copy = latest_x, latest_y_copy = latest_y;
+                latest_x = latest_x + k, latest_y = latest_y - i;
+                record_board[latest_x][latest_y] = type;
+                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
+                record_board[latest_x][latest_y] = EMPTY;
+                if (value > alpha)
+                {
+                    alpha = value;
+                    if (depth == DEPTH)
+                        next_point_x = latest_x, next_point_y = latest_y;
+                    if (value >= beta)
+                        return beta;
+                    alpha = value;
+                }
+                latest_x = latest_x_copy, latest_y = latest_y_copy;
+            }
+            if (latest_x + k >= 0 && latest_x + k < SIZE && latest_y + i <= SIZE
+                && record_board[latest_x + k][latest_y + i] == EMPTY
+                && has_neighbor(latest_x + k, latest_y + i))
+            {
+                int latest_x_copy = latest_x, latest_y_copy = latest_y;
+                latest_x = latest_x + k, latest_y = latest_y + i;
+                record_board[latest_x][latest_y] = type;
+                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
+                record_board[latest_x][latest_y] = EMPTY;
+                if (value > alpha)
+                {
+                    alpha = value;
+                    if (depth == DEPTH)
+                        next_point_x = latest_x, next_point_y = latest_y;
+                    if (value >= beta)
+                        return beta;
+                    alpha = value;
+                }
+                latest_x = latest_x_copy, latest_y = latest_y_copy;
+            }
+        }
+    }
+    return alpha;
+}
+
+/*
+void negative_max(int x, int y)
 {
     for (int i = 1; NOT_ALL_CROSS_BORDER; i++)
     {
         for (int j = -i; j <= i; j++)
         {
-            if (latest_x - i >= 0 && latest_y + j < SIZE 
-                && record_board[latest_x - i][latest_y + j] == EMPTY)
-            {
+            if (latest_x - i >= 0 && latest_y + j < SIZE \
+                && record_board[latest_x - i][latest_y + j] == EMPTY \
+                && has_neighbor(latest_x - i, latest_y + j))
                 printf("%d %d\n", latest_x - i, latest_y + j);
-            }
-            if (latest_x + i < SIZE && latest_y + j < SIZE
-                && record_board[latest_x + i][latest_y + j] == EMPTY)
-            {
+            if (latest_x + i >= 0 && latest_y + j < SIZE \
+                && record_board[latest_x + i][latest_y + j] == EMPTY \
+                && has_neighbor(latest_x + i, latest_y + j))
                 printf("%d %d\n", latest_x + i, latest_y + j);
-            }
         }
         for (int k = -i + 1; k <= i - 1; k++)
         {
-            if (latest_x + k < SIZE && latest_y - i >= 0
-                && record_board[latest_x + k][latest_y - i] == EMPTY)
-            {
-                printf("%d %d\n", latest_x + k, latest_y - i);
-            }
-            if (latest_x + k < SIZE && latest_y + i < SIZE
-                && record_board[latest_x + k][latest_y + i] == EMPTY)
-            {
+            if (latest_x + k >= 0 && latest_y + i < SIZE \
+                && record_board[latest_x + k][latest_y - i] == EMPTY \
+                && has_neighbor(latest_x + k, latest_y - i))
                 printf("%d %d\n", latest_x + k, latest_y + i);
-            }
+            if (latest_x + k >= 0 && latest_y + i < SIZE \
+                && record_board[latest_x + k][latest_y - i] == EMPTY \
+                && has_neighbor(latest_x + k, latest_y - i))
+                printf("%d %d\n", latest_x + k, latest_y - i);
         }
     }
-    return 0;
-    /*
-        下一步的计划：
-        1.设置递归初始条件
-        2.解决放子再收回的操作
-        3.研究alpha-beta剪枝的具体操作
-    */
 }
+*/
+/*
+            NEGATIVE_MAX(-i, j)
+            NEGATIVE_MAX(i, j)
+            NEGATIVE_MAX(k, -i)
+            NEGATIVE_MAX(k, i)
+*/
