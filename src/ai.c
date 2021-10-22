@@ -1,30 +1,16 @@
 #include <stdio.h>
 #include "game.h"
-#include "game_functions.h"
+#include "game_func.h"
 #include "ai.h"
+#include "constants.h"
 
-#define SIZE 15
-#define EMPTY 0
-#define BLACKPIECE 1
-#define WHITEPIECE 7
-
-#define DEAD_TWO 50
-#define ACTIVE_TWO 250
-#define DEAD_THREE 250
-#define ACTIVE_THREE 2000
-#define DEAD_FOUR 2000
-#define ACTIVE_FOUR 10000
-#define FIVE 99999999
-#define FORBIDDEN -99999999
-
-#define DEPTH 3
 extern int latest_x, latest_y;
 extern int record_board[SIZE][SIZE];
 
 #define NOT_ALL_CROSS_BORDER \
     latest_x - i >= 0 || latest_x + i < SIZE || latest_y - i >= 0 || latest_y + i < SIZE
 
-int next_point_x = 0, next_point_y = 0;
+extern int next_point_x, next_point_y;
 
 int calculate_mark(int x, int y, int type)
 {
@@ -132,7 +118,10 @@ int negative_max(int type, int depth, int alpha, int beta)
                     if (depth == DEPTH)
                         next_point_x = latest_x, next_point_y = latest_y;
                     if (value >= beta)
+                    {
+                        latest_x = latest_x_copy, latest_y = latest_y_copy;
                         return beta;
+                    }
                     alpha = value;
                 }
                 latest_x = latest_x_copy, latest_y = latest_y_copy;
@@ -152,7 +141,10 @@ int negative_max(int type, int depth, int alpha, int beta)
                     if (depth == DEPTH)
                         next_point_x = latest_x, next_point_y = latest_y;
                     if (value >= beta)
+                    {
+                        latest_x = latest_x_copy, latest_y = latest_y_copy;
                         return beta;
+                    }
                     alpha = value;
                 }
                 latest_x = latest_x_copy, latest_y = latest_y_copy;
@@ -175,7 +167,10 @@ int negative_max(int type, int depth, int alpha, int beta)
                     if (depth == DEPTH)
                         next_point_x = latest_x, next_point_y = latest_y;
                     if (value >= beta)
+                    {
+                        latest_x = latest_x_copy, latest_y = latest_y_copy;
                         return beta;
+                    }
                     alpha = value;
                 }
                 latest_x = latest_x_copy, latest_y = latest_y_copy;
@@ -195,7 +190,10 @@ int negative_max(int type, int depth, int alpha, int beta)
                     if (depth == DEPTH)
                         next_point_x = latest_x, next_point_y = latest_y;
                     if (value >= beta)
+                    {
+                        latest_x = latest_x_copy, latest_y = latest_y_copy;
                         return beta;
+                    }
                     alpha = value;
                 }
                 latest_x = latest_x_copy, latest_y = latest_y_copy;
@@ -204,40 +202,3 @@ int negative_max(int type, int depth, int alpha, int beta)
     }
     return alpha;
 }
-
-/*
-void negative_max(int x, int y)
-{
-    for (int i = 1; NOT_ALL_CROSS_BORDER; i++)
-    {
-        for (int j = -i; j <= i; j++)
-        {
-            if (latest_x - i >= 0 && latest_y + j < SIZE \
-                && record_board[latest_x - i][latest_y + j] == EMPTY \
-                && has_neighbor(latest_x - i, latest_y + j))
-                printf("%d %d\n", latest_x - i, latest_y + j);
-            if (latest_x + i >= 0 && latest_y + j < SIZE \
-                && record_board[latest_x + i][latest_y + j] == EMPTY \
-                && has_neighbor(latest_x + i, latest_y + j))
-                printf("%d %d\n", latest_x + i, latest_y + j);
-        }
-        for (int k = -i + 1; k <= i - 1; k++)
-        {
-            if (latest_x + k >= 0 && latest_y + i < SIZE \
-                && record_board[latest_x + k][latest_y - i] == EMPTY \
-                && has_neighbor(latest_x + k, latest_y - i))
-                printf("%d %d\n", latest_x + k, latest_y + i);
-            if (latest_x + k >= 0 && latest_y + i < SIZE \
-                && record_board[latest_x + k][latest_y - i] == EMPTY \
-                && has_neighbor(latest_x + k, latest_y - i))
-                printf("%d %d\n", latest_x + k, latest_y - i);
-        }
-    }
-}
-*/
-/*
-            NEGATIVE_MAX(-i, j)
-            NEGATIVE_MAX(i, j)
-            NEGATIVE_MAX(k, -i)
-            NEGATIVE_MAX(k, i)
-*/

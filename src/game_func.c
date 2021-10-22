@@ -2,50 +2,15 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
-#include "game_functions.h"
+#include "game_func.h"
 #include "game.h"
+#include "constants.h"
 
-#define SIZE 15
-#define CHARSIZE 2
-
-#define BLACKPIECE 1
-#define BLACKTRIANGLE 3
-#define WHITEPIECE 7
-#define WHITETRIANGLE 9
-
-// the board uses GBK coding
-// each Chinese character occupies two bytes
-char init_display_board_array[SIZE][CHARSIZE * SIZE + 1] =
-{
-	"©³©Ó©Ó©Ó©Ó©Ó©Ó©Ó©Ó©Ó©Ó©Ó©Ó©Ó©·",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©Ä©à©à©à©à©à©à©à©à©à©à©à©à©à©Ì",
-	"©»©Û©Û©Û©Û©Û©Û©Û©Û©Û©Û©Û©Û©Û©¿"
-};
-
-// this array is used to show the board(along with pieces)
-char display_board_array[SIZE][SIZE * CHARSIZE + 1];
-// this array is used to record the board(along with pieces)
-int record_board[SIZE][SIZE];
-
-// the position of the piece placed just now
-int latest_x = -1, latest_y = -1;
-
-// the type of previous pieces
-// -1 for no pieces 
-// 0 for black pieces && 1 for white pieces
-int latest_type = -1;
+extern char init_display_board_array[SIZE][CHARSIZE * SIZE + 1];
+extern char display_board_array[SIZE][SIZE * CHARSIZE + 1];
+extern int record_board[SIZE][SIZE];
+extern int latest_x, latest_y;
+extern int latest_type;
 
 // black pieces
 char play1_pic[] = "¡ñ"; 
@@ -53,7 +18,6 @@ char play1_current_pic[] = "¡ø";
 // white pieces
 char play2_pic[] = "¡ð"; 
 char play2_current_pic[] = "¡÷";
-
 
 // initialize the chess board
 void init_record_board()

@@ -1,13 +1,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "game_functions.h"
+#include "game_func.h"
 #include "game.h"
 #include "ai.h"
-
-#define BLACKPIECE 1
-#define WHITEPIECE 7
-#define SIZE 15
+#include "constants.h"
 
 extern int latest_x, latest_y;
 extern int next_point_x, next_point_y;
