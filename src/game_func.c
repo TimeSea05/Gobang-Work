@@ -124,7 +124,10 @@ void drop_pieces(int type)
 		if (record_board[coordinate_x][coordinate_y] == 0)
 		{
 			// no pieces in this position
-			record_board[coordinate_x][coordinate_y] = BLACKTRIANGLE + type * 6;
+			if (type == BLACKPIECE)
+				record_board[coordinate_x][coordinate_y] = BLACKTRIANGLE;
+			else if (type == WHITEPIECE)
+				record_board[coordinate_x][coordinate_y] = WHITEPIECE;
 			latest_x = coordinate_x;
 			latest_y = coordinate_y;
 			latest_type = type;
@@ -144,14 +147,8 @@ void drop_pieces(int type)
 int game_win()
 {
 	if (is_five_black(latest_x, latest_y))
-	{
-		printf("Black wins!\n");
-		return 1;
-	}
+		return BLACKPIECE;
 	else if (is_five_white(latest_x, latest_y))
-	{
-		printf("White wins!\n");
-		return 1;
-	}
+		return WHITEPIECE;
 	return 0;
 }

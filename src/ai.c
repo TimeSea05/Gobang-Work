@@ -53,7 +53,7 @@ int evaluate(int x, int y, int type)
     record_board[x][y] = type;
     if (type == BLACKPIECE)
         return (black_mark_o - black_mark_n) - (white_mark_o - white_mark_n);
-    return (white_mark_o - white_mark_n) - (black_mark_o - black_mark_n);
+    return (white_mark_o - white_mark_n) - (black_mark_o - black_mark_n) * 10;
 }
 
 int is_forbidden(int x, int y)
@@ -101,55 +101,6 @@ int negative_max(int type, int depth, int alpha, int beta)
         return evaluate(latest_x, latest_y, trans_type(type));
     for (int i = 1; NOT_ALL_CROSS_BORDER; i++)
     {
-        for (int j = -i; j <= i; j++)
-        {
-            if (latest_x - i >= 0 && latest_y + j >= 0 && latest_y + j < SIZE
-                && record_board[latest_x - i][latest_y + j] == EMPTY
-                && has_neighbor(latest_x - i, latest_y + j))
-            {
-                int latest_x_copy = latest_x, latest_y_copy = latest_y;
-                latest_x = latest_x - i, latest_y = latest_y + j;
-                record_board[latest_x][latest_y] = type;
-                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
-                record_board[latest_x][latest_y] = EMPTY;
-                if (value > alpha)
-                {
-                    alpha = value;
-                    if (depth == DEPTH)
-                        next_point_x = latest_x, next_point_y = latest_y;
-                    if (value >= beta)
-                    {
-                        latest_x = latest_x_copy, latest_y = latest_y_copy;
-                        return beta;
-                    }
-                    alpha = value;
-                }
-                latest_x = latest_x_copy, latest_y = latest_y_copy;
-            }
-            if (latest_x + i < SIZE && latest_y + j >= 0 && latest_y + j < SIZE
-                && record_board[latest_x + i][latest_y + j] == EMPTY
-                && has_neighbor(latest_x + i, latest_y + j))
-            {
-                int latest_x_copy = latest_x, latest_y_copy = latest_y;
-                latest_x = latest_x + i, latest_y = latest_y + j;
-                record_board[latest_x][latest_y] = type;
-                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
-                record_board[latest_x][latest_y] = EMPTY;
-                if (value > alpha)
-                {
-                    alpha = value;
-                    if (depth == DEPTH)
-                        next_point_x = latest_x, next_point_y = latest_y;
-                    if (value >= beta)
-                    {
-                        latest_x = latest_x_copy, latest_y = latest_y_copy;
-                        return beta;
-                    }
-                    alpha = value;
-                }
-                latest_x = latest_x_copy, latest_y = latest_y_copy;
-            }
-        }
         for (int k = -i + 1; k <= i - 1; k++)
         {
             if (latest_x + k >= 0 && latest_x + k < SIZE && latest_y - i >= 0
@@ -159,7 +110,7 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + k, latest_y = latest_y - i;
                 record_board[latest_x][latest_y] = type;
-                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
+                int value = evaluate(latest_x, latest_y, type);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
                 {
@@ -182,7 +133,7 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + k, latest_y = latest_y + i;
                 record_board[latest_x][latest_y] = type;
-                int value = -negative_max(trans_type(type), depth - 1, -beta, -alpha);
+                int value = evaluate(latest_x, latest_y, type);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
                 {
@@ -199,6 +150,57 @@ int negative_max(int type, int depth, int alpha, int beta)
                 latest_x = latest_x_copy, latest_y = latest_y_copy;
             }
         }
+
+        for (int j = -i; j <= i; j++)
+        {
+            if (latest_x - i >= 0 && latest_y + j >= 0 && latest_y + j < SIZE
+                && record_board[latest_x - i][latest_y + j] == EMPTY
+                && has_neighbor(latest_x - i, latest_y + j))
+            {
+                int latest_x_copy = latest_x, latest_y_copy = latest_y;
+                latest_x = latest_x - i, latest_y = latest_y + j;
+                record_board[latest_x][latest_y] = type;
+                int value = evaluate(latest_x, latest_y, type);
+                record_board[latest_x][latest_y] = EMPTY;
+                if (value > alpha)
+                {
+                    alpha = value;
+                    if (depth == DEPTH)
+                        next_point_x = latest_x, next_point_y = latest_y;
+                    if (value >= beta)
+                    {
+                        latest_x = latest_x_copy, latest_y = latest_y_copy;
+                        return beta;
+                    }
+                    alpha = value;
+                }
+                latest_x = latest_x_copy, latest_y = latest_y_copy;
+            }
+            if (latest_x + i < SIZE && latest_y + j >= 0 && latest_y + j < SIZE
+                && record_board[latest_x + i][latest_y + j] == EMPTY
+                && has_neighbor(latest_x + i, latest_y + j))
+            {
+                int latest_x_copy = latest_x, latest_y_copy = latest_y;
+                latest_x = latest_x + i, latest_y = latest_y + j;
+                record_board[latest_x][latest_y] = type;
+                int value = evaluate(latest_x, latest_y, type);
+                record_board[latest_x][latest_y] = EMPTY;
+                if (value > alpha)
+                {
+                    alpha = value;
+                    if (depth == DEPTH)
+                        next_point_x = latest_x, next_point_y = latest_y;
+                    if (value >= beta)
+                    {
+                        latest_x = latest_x_copy, latest_y = latest_y_copy;
+                        return beta;
+                    }
+                    alpha = value;
+                }
+                latest_x = latest_x_copy, latest_y = latest_y_copy;
+            }
+        }
+        
     }
     return alpha;
 }

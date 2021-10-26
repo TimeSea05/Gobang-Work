@@ -9,22 +9,26 @@
 */
 
 // dead two black
-char dead_two_B_2[] = "710100\0";
+char dead_two_B_1[] = "7110\0";
+char s_dead_two_B_1[] = "7110117\0";
+char dead_two_B_2[] = "7101\0";
+char s_dead_two_B_2[] = "71017\0";
 char dead_two_B_3[] = "710010\0";
-char dead_two_B_4[] = "10001\0";
 
 // dead two white
-char dead_two_W_2[] = "170700\0";
+char dead_two_W_1[] = "1770\0";
+char s_dead_two_W_1[] = "1770771\0";
+char dead_two_W_2[] = "1707\0";
+char s_dead_two_W_2[] = "17071\0";
 char dead_two_W_3[] = "170070\0";
-char dead_two_W_4[] = "70007\0";
 
 // active two black
-char active_two_B_1[] = "001100\0";
-char active_two_B_2[] = "010101\0";
+char active_two_B_1[] = "0110\0";
+char active_two_B_2[] = "01010\0";
 
 // active two white
-char active_two_W_1[] = "007700\0";
-char active_two_W_2[] = "070707\0";
+char active_two_W_1[] = "0770\0";
+char active_two_W_2[] = "07070\0";
 
 // dead three black
 char dead_three_B_1[] = "11001\0";

@@ -112,7 +112,6 @@ char * to_string_sub_diagonal(int x, int y)
     return NULL;
 }
 
-
 char * to_string(int x, int y, int direction)
 {
     switch(direction)
@@ -164,55 +163,66 @@ int num_dead_two_black(int x, int y)
 {
     int res = 0;
 
+    char * r_dead_two_B_1 = str_reverse(dead_two_B_1);
     char * r_dead_two_B_2 = str_reverse(dead_two_B_2);
     char * r_dead_two_B_3 = str_reverse(dead_two_B_3);
-    char * r_dead_two_B_4 = str_reverse(dead_two_B_4);
 
     for (int direction = 1; direction <= 4; direction++)
     {
         char * str = to_string(x, y, direction);
 
+        res += str_match(dead_two_B_1, str);
         res += str_match(dead_two_B_2, str);
         res += str_match(dead_two_B_3, str);
-        res += str_match(dead_two_B_4, str);
 
+        res += str_match(r_dead_two_B_1, str);
         res += str_match(r_dead_two_B_2, str);
         res += str_match(r_dead_two_B_3, str);
-        res += str_match(r_dead_two_B_4, str);
+
+        res -= str_match(s_dead_two_B_1, str);
+        res -= str_match(s_dead_two_B_2, str);
 
         free(str);
     }
+
+    res -= num_dead_three_black(x, y);
+
+    free(r_dead_two_B_1);
     free(r_dead_two_B_2);
     free(r_dead_two_B_3);
-    free(r_dead_two_B_4);
-
+    
     return res;
 }
 int num_dead_two_white(int x, int y)
 {
     int res = 0;
 
+    char * r_dead_two_W_1 = str_reverse(dead_two_W_1);
     char * r_dead_two_W_2 = str_reverse(dead_two_W_2);
     char * r_dead_two_W_3 = str_reverse(dead_two_W_3);
-    char * r_dead_two_W_4 = str_reverse(dead_two_W_4);
 
     for (int direction = 1; direction <= 4; direction++)
     {
         char * str = to_string(x, y, direction);
 
+        res += str_match(dead_two_W_1, str);
         res += str_match(dead_two_W_2, str);
         res += str_match(dead_two_W_3, str);
-        res += str_match(dead_two_W_4, str);
 
+        res += str_match(r_dead_two_W_1, str);
         res += str_match(r_dead_two_W_2, str);
         res += str_match(r_dead_two_W_3, str);
-        res += str_match(r_dead_two_W_4, str);
+        
+        res -= str_match(s_dead_two_W_1, str);
+        res -= str_match(s_dead_two_W_2, str);
 
         free(str);
     }
+    res -= num_dead_three_white(x, y);
+    
+    free(r_dead_two_W_1);
     free(r_dead_two_W_2);
     free(r_dead_two_W_3);
-    free(r_dead_two_W_4);
 
     return res;
 }
@@ -221,32 +231,30 @@ int num_active_two_black(int x, int y)
 {
     int res = 0;
 
-    char * r_active_two_B_2 = str_reverse(active_two_B_2);
     for (int direction = 1; direction <= 4; direction++)
     {
         char * str = to_string(x, y, direction);
         res += str_match(active_two_B_1, str);
         res += str_match(active_two_B_2, str);
-        res += str_match(r_active_two_B_2, str);
         free(str);
     }
-    free(r_active_two_B_2);
+    res -= num_active_three_black(x, y);
+    res -= num_dead_four_black(x, y);
     return res;
 }
 int num_active_two_white(int x, int y)
 {
     int res = 0;
 
-    char * r_active_two_W_2 = str_reverse(active_two_W_2);
     for (int direction = 1; direction <= 4; direction++)
     {
         char * str = to_string(x, y, direction);
         res += str_match(active_two_W_1, str);
         res += str_match(active_two_W_2, str);
-        res += str_match(r_active_two_W_2, str);
         free(str);
     }
-    free(r_active_two_W_2);
+    res -= num_active_three_white(x, y);
+    res -= num_dead_four_white(x, y);
     return res;
 }
 

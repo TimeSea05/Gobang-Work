@@ -3,8 +3,7 @@
 
 #define SIZE 15
 #define CHARSIZE 2
-#define DEPTH 3
-
+#define DEPTH 1
 enum {
     EMPTY = 0,
     BLACKPIECE = 1,
