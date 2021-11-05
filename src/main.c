@@ -12,6 +12,7 @@ extern int record_board[SIZE][SIZE];
 
 int main()
 {
+    setlocale(LC_ALL, "");
     init_record_board();
     record_to_display_array();
     display_board();

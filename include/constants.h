@@ -1,8 +1,9 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <stddef.h>
+#include <locale.h>
 #define SIZE 15
-#define CHARSIZE 2
 #define DEPTH 1
 enum {
     EMPTY = 0,
