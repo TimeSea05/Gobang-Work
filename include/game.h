@@ -58,9 +58,17 @@ char * to_string_sub_diagonal(int x, int y);
  * @brief 暴力匹配字符串
  * @param str_s 二者中相对较短的字符串
  * @param str_l 二者中相对较长的字符串
- * @return 若匹配成功返回1, 若匹配失败或者str_s长度大于str_l返回0
+ * @return 若匹配成功返回匹配成功的次数, 若匹配失败或者str_s长度大于str_l返回0
  **/
 int str_match(char * str_s, char * str_l);
+
+/**
+ * @brief 在长字符串的两侧暴力匹配字符串，处理棋型处于棋盘边界的情况
+ * @param str_s 二者中相对较短的字符串
+ * @param str_l 二者中相对较长的字符串
+ * @return 若匹配成功返回匹配成功的次数, 若匹配失败或者str_s长度大于str_l返回0
+ **/
+int str_match_side(char * str_s, char * str_l);
 
 /**
  * @brief 将字符串反序

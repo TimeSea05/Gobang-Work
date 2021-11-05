@@ -146,7 +146,9 @@ void drop_pieces(int type)
 // detect winnership
 int game_win()
 {
-	if (is_five_black(latest_x, latest_y))
+	if (is_five_black(latest_x, latest_y) == -1)
+		return FORBIDDEN;
+	else if (is_five_black(latest_x, latest_y) == 1)
 		return BLACKPIECE;
 	else if (is_five_white(latest_x, latest_y))
 		return WHITEPIECE;

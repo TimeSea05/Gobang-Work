@@ -2,6 +2,7 @@
 #define CHESS_TYPE_H_
 
 // s represents 'symmetry'
+// e represents 'edge'
 /* 
    for some of the cases, there is no need to give a corresponding symmetrical case
    because that will cause the string to be too long
@@ -14,6 +15,7 @@ char s_dead_two_B_1[] = "7110117\0";
 char dead_two_B_2[] = "7101\0";
 char s_dead_two_B_2[] = "71017\0";
 char dead_two_B_3[] = "710010\0";
+char e_dead_two_B_4[] = "110\0";
 
 // dead two white
 char dead_two_W_1[] = "1770\0";
@@ -21,6 +23,7 @@ char s_dead_two_W_1[] = "1770771\0";
 char dead_two_W_2[] = "1707\0";
 char s_dead_two_W_2[] = "17071\0";
 char dead_two_W_3[] = "170070\0";
+char e_dead_two_W_4[] = "770\0";
 
 // active two black
 char active_two_B_1[] = "0110\0";
@@ -40,6 +43,8 @@ char dead_three_B_3[] = "7011107\0";
 char dead_three_B_4[] = "711100\0";
 char dead_three_B_5[] = "711010\0";
 char dead_three_B_6[] = "710110\0";
+char e_dead_three_B_7[] = "1110\0";
+char e_dead_three_B_7_forbidden[] = "11101\0";
 
 // dead three white
 char dead_three_W_1[] = "77007\0";
@@ -51,6 +56,7 @@ char dead_three_W_3[] = "1077701\0";
 char dead_three_W_4[] = "177700\0";
 char dead_three_W_5[] = "177070\0";
 char dead_three_W_6[] = "170770\0";
+char e_dead_three_W_7[] = "7770\0";
 
 // active three black
 char active_three_B_1[] = "011100\0";
@@ -104,11 +110,15 @@ char dead_four_forbidden_4[] = "7111101\0";
 char dead_four_B_4[] = "10111100\0";
 char dead_four_B_5[] = "10111107\0";
 
+char e_dead_four_B_6[] = "11110\0";
+char e_dead_four_B_6_forbidden[] = "111101\0";
+
 // dead four white
 char dead_four_W_1[] = "77077\0";
 char dead_four_W_2[] = "77707\0";
 char s_dead_four_W_2[] = "7770777\0";
 char dead_four_W_3[] = "177770\0";
+char e_dead_four_W_6[] = "11110\0";
 
 // five
 char five_B[] = "11111\0";

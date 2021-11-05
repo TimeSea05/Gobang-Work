@@ -15,7 +15,6 @@ int main()
     init_record_board();
     record_to_display_array();
     display_board();
-    
     while(1)
     {
         if (latest_x != -1 && latest_y != -1)
@@ -23,7 +22,9 @@ int main()
         drop_pieces(BLACKPIECE);
         record_to_display_array();
         display_board();
-        if (game_win() == BLACKPIECE)
+        if (game_win() == FORBIDDEN)
+            printf("White wins!\n");
+        else if (game_win() == BLACKPIECE)
         {
             printf("Black wins!\n");
             break;
@@ -34,7 +35,7 @@ int main()
         latest_x = next_point_x, latest_y = next_point_y;
         record_to_display_array();
         display_board();
-        if (game_win())
+        if (game_win() == WHITEPIECE)
         {
             printf("White wins!\n");
             break;
