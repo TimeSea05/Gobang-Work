@@ -7,9 +7,9 @@
 
 extern int record_board[SIZE][SIZE];
 
-char *to_string_horizontal(int x, int y)
+char* to_string_horizontal(int x, int y)
 {
-    char *string_h = (char *)malloc(15);
+    char* string_h = (char* )malloc(15);
     for (int i = 0; i < SIZE; i++)
     {
         if (record_board[x][i] == EMPTY)
@@ -23,9 +23,9 @@ char *to_string_horizontal(int x, int y)
     y++; // useless statement to avoid warnings from the complier
     return string_h;
 }
-char * to_string_vertical(int x, int y)
+char* to_string_vertical(int x, int y)
 {
-    char *string_v = (char *)malloc(15);
+    char* string_v = (char* )malloc(15);
     for (int i = 0; i < SIZE; i++)
     {
         if (record_board[i][y] == EMPTY)
@@ -39,10 +39,10 @@ char * to_string_vertical(int x, int y)
     x++; // useless statement to avoid warnings from the complier
     return string_v;
 }
-char *to_string_main_diagonal(int x, int y)
+char* to_string_main_diagonal(int x, int y)
 {
     int length = 15 - abs(x - y);
-    char *string_md = (char *)malloc(length);
+    char* string_md = (char* )malloc(length);
     if (x < y)
         for (int i = 0; i < length; i++)
         {
@@ -66,13 +66,13 @@ char *to_string_main_diagonal(int x, int y)
     strcat(string_md, "\0");
     return string_md;
 }
-char *to_string_sub_diagonal(int x, int y)
+char* to_string_sub_diagonal(int x, int y)
 {
     int length;
     if (x + y < 15)
     {
         length = x + y + 1;
-        char *string_sd = (char *)malloc(length);
+        char* string_sd = (char* )malloc(length);
         for (int i = 0; i < length; i++)
         {
             if (record_board[length - 1 - i][i] == EMPTY)
@@ -88,7 +88,7 @@ char *to_string_sub_diagonal(int x, int y)
     else
     {
         length = (15 - x) + (15 - y) - 1;
-        char *string_sd = (char *)malloc(length);
+        char* string_sd = (char* )malloc(length);
         for (int i = 0; i < length; i++)
         {
             if (record_board[SIZE - 1 - i][x + y + 1 - SIZE + i] == EMPTY)
@@ -104,7 +104,7 @@ char *to_string_sub_diagonal(int x, int y)
     return NULL;
 }
 
-char *to_string(int x, int y, int direction)
+char* to_string(int x, int y, int direction)
 {
     switch (direction)
     {
@@ -120,17 +120,17 @@ char *to_string(int x, int y, int direction)
         return NULL;
     }
 }
-char *str_reverse(char *str)
+char* str_reverse(char* str)
 {
     int len = strlen(str) + 1;
-    char *reverse_str = (char *)malloc(len);
+    char* reverse_str = (char* )malloc(len);
     for (int i = 0; i < len - 1; i++)
         reverse_str[i] = str[len - 2 - i];
     reverse_str[len - 1] = '\0';
     return reverse_str;
 }
 
-int str_match(char *str_s, char *str_l)
+int str_match(char* str_s, char* str_l)
 {
     int len_str_s = strlen(str_s), len_str_l = strlen(str_l);
     if (len_str_s > len_str_l)
@@ -151,7 +151,7 @@ int str_match(char *str_s, char *str_l)
     }
     return res;
 }
-int str_match_side(char *str_s, char *str_l)
+int str_match_side(char* str_s, char* str_l)
 {
     int len_str_s = strlen(str_s), len_str_l = strlen(str_l);
     if (len_str_s > len_str_l)
@@ -175,35 +175,32 @@ int str_match_side(char *str_s, char *str_l)
     return res;
 }
 
-int num_dead_two_black(int x, int y)
+int num_dead_two_black(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_dead_two_B_1 = str_reverse(dead_two_B_1);
-    char *r_dead_two_B_2 = str_reverse(dead_two_B_2);
-    char *r_dead_two_B_3 = str_reverse(dead_two_B_3);
+    char* r_dead_two_B_1 = str_reverse(dead_two_B_1);
+    char* r_dead_two_B_2 = str_reverse(dead_two_B_2);
+    char* r_dead_two_B_3 = str_reverse(dead_two_B_3);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
+    char* str = to_string(x, y, direction);
 
-        res += str_match(dead_two_B_1, str);
-        res += str_match(dead_two_B_2, str);
-        res += str_match(dead_two_B_3, str);
+    res += str_match(dead_two_B_1, str);
+    res += str_match(dead_two_B_2, str);
+    res += str_match(dead_two_B_3, str);
 
-        res += str_match(r_dead_two_B_1, str);
-        res += str_match(r_dead_two_B_2, str);
-        res += str_match(r_dead_two_B_3, str);
+    res += str_match(r_dead_two_B_1, str);
+    res += str_match(r_dead_two_B_2, str);
+    res += str_match(r_dead_two_B_3, str);
 
-        res -= str_match(s_dead_two_B_1, str);
-        res -= str_match(s_dead_two_B_2, str);
+    res -= str_match(s_dead_two_B_1, str);
+    res -= str_match(s_dead_two_B_2, str);
 
-        res += str_match_side(e_dead_two_B_4, str);
+    res += str_match_side(e_dead_two_B_4, str);
 
-        free(str);
-    }
+    free(str);
 
-    res -= num_dead_three_black(x, y);
+    res -= num_dead_three_black(x, y, direction);
 
     free(r_dead_two_B_1);
     free(r_dead_two_B_2);
@@ -211,34 +208,33 @@ int num_dead_two_black(int x, int y)
 
     return res;
 }
-int num_dead_two_white(int x, int y)
+int num_dead_two_white(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_dead_two_W_1 = str_reverse(dead_two_W_1);
-    char *r_dead_two_W_2 = str_reverse(dead_two_W_2);
-    char *r_dead_two_W_3 = str_reverse(dead_two_W_3);
+    char* r_dead_two_W_1 = str_reverse(dead_two_W_1);
+    char* r_dead_two_W_2 = str_reverse(dead_two_W_2);
+    char* r_dead_two_W_3 = str_reverse(dead_two_W_3);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
 
-        res += str_match(dead_two_W_1, str);
-        res += str_match(dead_two_W_2, str);
-        res += str_match(dead_two_W_3, str);
+    char* str = to_string(x, y, direction);
 
-        res += str_match(r_dead_two_W_1, str);
-        res += str_match(r_dead_two_W_2, str);
-        res += str_match(r_dead_two_W_3, str);
+    res += str_match(dead_two_W_1, str);
+    res += str_match(dead_two_W_2, str);
+    res += str_match(dead_two_W_3, str);
 
-        res -= str_match(s_dead_two_W_1, str);
-        res -= str_match(s_dead_two_W_2, str);
+    res += str_match(r_dead_two_W_1, str);
+    res += str_match(r_dead_two_W_2, str);
+    res += str_match(r_dead_two_W_3, str);
 
-        res += str_match_side(e_dead_two_W_4, str);
+    res -= str_match(s_dead_two_W_1, str);
+    res -= str_match(s_dead_two_W_2, str);
 
-        free(str);
-    }
-    res -= num_dead_three_white(x, y);
+    res += str_match_side(e_dead_two_W_4, str);
+
+    free(str);
+
+    res -= num_dead_three_white(x, y, direction);
 
     free(r_dead_two_W_1);
     free(r_dead_two_W_2);
@@ -247,73 +243,67 @@ int num_dead_two_white(int x, int y)
     return res;
 }
 
-int num_active_two_black(int x, int y)
+int num_active_two_black(int x, int y, int direction)
 {
     int res = 0;
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
-        res += str_match(active_two_B_1, str);
-        res += str_match(active_two_B_2, str);
-        free(str);
-    }
-    res -= num_active_three_black(x, y);
-    res -= num_dead_four_black(x, y);
+    char* str = to_string(x, y, direction);
+    res += str_match(active_two_B_1, str);
+    res += str_match(active_two_B_2, str);
+    free(str);
+
+    res -= num_active_three_black(x, y, direction);
+    res -= num_dead_four_black(x, y, direction);
     return res;
 }
-int num_active_two_white(int x, int y)
+int num_active_two_white(int x, int y, int direction)
 {
     int res = 0;
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
-        res += str_match(active_two_W_1, str);
-        res += str_match(active_two_W_2, str);
-        free(str);
-    }
-    res -= num_active_three_white(x, y);
-    res -= num_dead_four_white(x, y);
+    char* str = to_string(x, y, direction);
+    res += str_match(active_two_W_1, str);
+    res += str_match(active_two_W_2, str);
+
+    free(str);
+    
+    res -= num_active_three_white(x, y, direction);
+    res -= num_dead_four_white(x, y, direction);
     return res;
 }
 
-int num_dead_three_black(int x, int y)
+int num_dead_three_black(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_dead_three_B_1 = str_reverse(dead_three_B_1);
-    char *r_dead_three_B_4 = str_reverse(dead_three_B_4);
-    char *r_dead_three_B_5 = str_reverse(dead_three_B_5);
-    char *r_dead_three_B_6 = str_reverse(dead_three_B_6);
+    char* r_dead_three_B_1 = str_reverse(dead_three_B_1);
+    char* r_dead_three_B_4 = str_reverse(dead_three_B_4);
+    char* r_dead_three_B_5 = str_reverse(dead_three_B_5);
+    char* r_dead_three_B_6 = str_reverse(dead_three_B_6);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
+    
+    char* str = to_string(x, y, direction);
 
-        res += str_match(dead_three_B_1, str);
-        res += str_match(dead_three_B_2, str);
-        res += str_match(dead_three_B_3, str);
-        res += str_match(dead_three_B_4, str);
-        res += str_match(dead_three_B_5, str);
-        res += str_match(dead_three_B_6, str);
+    res += str_match(dead_three_B_1, str);
+    res += str_match(dead_three_B_2, str);
+    res += str_match(dead_three_B_3, str);
+    res += str_match(dead_three_B_4, str);
+    res += str_match(dead_three_B_5, str);
+    res += str_match(dead_three_B_6, str);
 
-        // reverse
-        res += str_match(r_dead_three_B_1, str);
-        res += str_match(r_dead_three_B_4, str);
-        res += str_match(r_dead_three_B_5, str);
-        res += str_match(r_dead_three_B_6, str);
+    // reverse
+    res += str_match(r_dead_three_B_1, str);
+    res += str_match(r_dead_three_B_4, str);
+    res += str_match(r_dead_three_B_5, str);
+    res += str_match(r_dead_three_B_6, str);
 
-        // symmetry
-        res -= str_match(s_dead_three_B_1, str);
-        res -= str_match(s_dead_three_B_1_a, str);
+    // symmetry
+    res -= str_match(s_dead_three_B_1, str);
+    res -= str_match(s_dead_three_B_1_a, str);
 
-        res += str_match_side(e_dead_three_B_7, str);
-        res -= str_match_side(e_dead_three_B_7_forbidden, str);
+    res += str_match_side(e_dead_three_B_7, str);
+    res -= str_match_side(e_dead_three_B_7_forbidden, str);
 
-        free(str);
-    }
-
+    free(str);
     free(r_dead_three_B_1);
     free(r_dead_three_B_4);
     free(r_dead_three_B_5);
@@ -321,41 +311,37 @@ int num_dead_three_black(int x, int y)
 
     return res;
 }
-int num_dead_three_white(int x, int y)
+int num_dead_three_white(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_dead_three_W_1 = str_reverse(dead_three_W_1);
-    char *r_dead_three_W_4 = str_reverse(dead_three_W_4);
-    char *r_dead_three_W_5 = str_reverse(dead_three_W_5);
-    char *r_dead_three_W_6 = str_reverse(dead_three_W_6);
+    char* r_dead_three_W_1 = str_reverse(dead_three_W_1);
+    char* r_dead_three_W_4 = str_reverse(dead_three_W_4);
+    char* r_dead_three_W_5 = str_reverse(dead_three_W_5);
+    char* r_dead_three_W_6 = str_reverse(dead_three_W_6);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
+    char* str = to_string(x, y, direction);
 
-        res += str_match(dead_three_W_1, str);
-        res += str_match(dead_three_W_2, str);
-        res += str_match(dead_three_W_3, str);
-        res += str_match(dead_three_W_4, str);
-        res += str_match(dead_three_W_5, str);
-        res += str_match(dead_three_W_6, str);
+    res += str_match(dead_three_W_1, str);
+    res += str_match(dead_three_W_2, str);
+    res += str_match(dead_three_W_3, str);
+    res += str_match(dead_three_W_4, str);
+    res += str_match(dead_three_W_5, str);
+    res += str_match(dead_three_W_6, str);
 
-        // reverse
-        res += str_match(r_dead_three_W_1, str);
-        res += str_match(r_dead_three_W_4, str);
-        res += str_match(r_dead_three_W_5, str);
-        res += str_match(r_dead_three_W_6, str);
+    // reverse
+    res += str_match(r_dead_three_W_1, str);
+    res += str_match(r_dead_three_W_4, str);
+    res += str_match(r_dead_three_W_5, str);
+    res += str_match(r_dead_three_W_6, str);
 
-        // symmetry
-        res -= str_match(s_dead_three_W_1, str);
-        res -= str_match(s_dead_three_W_1_a, str);
+    // symmetry
+    res -= str_match(s_dead_three_W_1, str);
+    res -= str_match(s_dead_three_W_1_a, str);
 
-        res += str_match_side(e_dead_three_W_7, str);
+    res += str_match_side(e_dead_three_W_7, str);
 
-        free(str);
-    }
-
+    free(str);
     free(r_dead_three_W_1);
     free(r_dead_three_W_4);
     free(r_dead_three_W_5);
@@ -364,46 +350,43 @@ int num_dead_three_white(int x, int y)
     return res;
 }
 
-int num_active_three_black(int x, int y)
+int num_active_three_black(int x, int y, int direction)
 {
     int res = 0;
-    char *r_active_three_B_1 = str_reverse(active_three_B_1);
-    char *r_active_three_forbidden_1 = str_reverse(active_three_forbidden_1);
-    char *r_active_three_forbidden_2 = str_reverse(active_three_forbidden_2);
+    char* r_active_three_B_1 = str_reverse(active_three_B_1);
+    char* r_active_three_forbidden_1 = str_reverse(active_three_forbidden_1);
+    char* r_active_three_forbidden_2 = str_reverse(active_three_forbidden_2);
 
-    char *r_active_three_B_2 = str_reverse(active_three_B_2);
-    char *r_active_three_forbidden_3 = str_reverse(active_three_forbidden_3);
-    char *r_active_three_forbidden_4 = str_reverse(active_three_forbidden_4);
+    char* r_active_three_B_2 = str_reverse(active_three_B_2);
+    char* r_active_three_forbidden_3 = str_reverse(active_three_forbidden_3);
+    char* r_active_three_forbidden_4 = str_reverse(active_three_forbidden_4);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
-        res += str_match(active_three_B_1, str);
-        res -= str_match(active_three_forbidden_1, str);
-        res -= str_match(active_three_forbidden_2, str);
+    char* str = to_string(x, y, direction);
+    res += str_match(active_three_B_1, str);
+    res -= str_match(active_three_forbidden_1, str);
+    res -= str_match(active_three_forbidden_2, str);
 
-        res += str_match(active_three_B_2, str);
-        res -= str_match(active_three_forbidden_3, str);
-        res -= str_match(active_three_forbidden_4, str);
+    res += str_match(active_three_B_2, str);
+    res -= str_match(active_three_forbidden_3, str);
+    res -= str_match(active_three_forbidden_4, str);
 
-        // reverse
-        res += str_match(r_active_three_B_1, str);
-        res -= str_match(r_active_three_forbidden_1, str);
-        res -= str_match(r_active_three_forbidden_2, str);
+    // reverse
+    res += str_match(r_active_three_B_1, str);
+    res -= str_match(r_active_three_forbidden_1, str);
+    res -= str_match(r_active_three_forbidden_2, str);
 
-        res += str_match(r_active_three_B_2, str);
-        res -= str_match(r_active_three_forbidden_3, str);
-        res -= str_match(r_active_three_forbidden_4, str);
+    res += str_match(r_active_three_B_2, str);
+    res -= str_match(r_active_three_forbidden_3, str);
+    res -= str_match(r_active_three_forbidden_4, str);
 
-        // symmetry
-        res -= str_match(s_active_three_B_1, str);
-        res -= str_match(s_active_three_B_2, str);
-        res += str_match(s_active_three_forbidden_1, str);
-        res += str_match(s_active_three_forbidden_3, str);
-        res += str_match(s_active_three_forbidden_4, str);
+    // symmetry
+    res -= str_match(s_active_three_B_1, str);
+    res -= str_match(s_active_three_B_2, str);
+    res += str_match(s_active_three_forbidden_1, str);
+    res += str_match(s_active_three_forbidden_3, str);
+    res += str_match(s_active_three_forbidden_4, str);
 
-        free(str);
-    }
+    free(str);
 
     free(r_active_three_B_1);
     free(r_active_three_forbidden_1);
@@ -415,177 +398,153 @@ int num_active_three_black(int x, int y)
 
     return res;
 }
-int num_active_three_white(int x, int y)
+int num_active_three_white(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_active_three_W_1 = str_reverse(active_three_W_1);
-    char *r_active_three_W_2 = str_reverse(active_three_W_2);
+    char* r_active_three_W_1 = str_reverse(active_three_W_1);
+    char* r_active_three_W_2 = str_reverse(active_three_W_2);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
+    char* str = to_string(x, y, direction);
 
-        res += str_match(active_three_W_1, str);
-        res += str_match(active_three_W_2, str);
+    res += str_match(active_three_W_1, str);
+    res += str_match(active_three_W_2, str);
 
-        // reverse
-        res += str_match(r_active_three_W_1, str);
-        res += str_match(r_active_three_W_2, str);
+    // reverse
+    res += str_match(r_active_three_W_1, str);
+    res += str_match(r_active_three_W_2, str);
 
-        // symmetry
-        res -= str_match(s_active_three_W_1, str);
-        res -= str_match(s_active_three_W_2, str);
+    // symmetry
+    res -= str_match(s_active_three_W_1, str);
+    res -= str_match(s_active_three_W_2, str);
 
-        free(str);
-    }
-
+    free(str);
+    
     free(r_active_three_W_1);
     free(r_active_three_W_2);
 
     return res;
 }
 
-int num_active_four_black(int x, int y)
+int num_active_four_black(int x, int y, int direction)
 {
     int res = 0;
-    char *r_active_four_forbidden = str_reverse(active_four_forbidden);
+    char* r_active_four_forbidden = str_reverse(active_four_forbidden);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
-        res += str_match(active_four_B, str);
-        res -= str_match(active_four_forbidden, str);
+    char* str = to_string(x, y, direction);
+    res += str_match(active_four_B, str);
+    res -= str_match(active_four_forbidden, str);
 
-        // reverse
-        res -= str_match(r_active_four_forbidden, str);
+    // reverse
+    res -= str_match(r_active_four_forbidden, str);
 
-        // symmetry
-        res += str_match(s_active_four_forbidden, str);
-        free(str);
-    }
+    // symmetry
+    res += str_match(s_active_four_forbidden, str);
+    free(str);
 
     free(r_active_four_forbidden);
 
     return res;
 }
-int num_active_four_white(int x, int y)
+int num_active_four_white(int x, int y, int direction)
 {
     int res = 0;
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
-        res += str_match(active_four_W, str);
-        free(str);
-    }
+    
+    char* str = to_string(x, y, direction);
+    res += str_match(active_four_W, str);
+    free(str);
+    
     return res;
 }
 
-int num_dead_four_black(int x, int y)
+int num_dead_four_black(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_dead_four_forbidden_1 = str_reverse(dead_four_forbidden_1);
+    char* r_dead_four_forbidden_1 = str_reverse(dead_four_forbidden_1);
 
-    char *r_dead_four_B_2 = str_reverse(dead_four_B_2);
-    char *r_dead_four_forbidden_2 = str_reverse(dead_four_forbidden_2);
-    char *r_dead_four_forbidden_3 = str_reverse(dead_four_forbidden_3);
+    char* r_dead_four_B_2 = str_reverse(dead_four_B_2);
+    char* r_dead_four_forbidden_2 = str_reverse(dead_four_forbidden_2);
+    char* r_dead_four_forbidden_3 = str_reverse(dead_four_forbidden_3);
 
-    char *r_dead_four_B_3 = str_reverse(dead_four_B_4);
-    char *r_dead_four_forbidden_4 = str_reverse(dead_four_forbidden_4);
+    char* r_dead_four_B_3 = str_reverse(dead_four_B_4);
+    char* r_dead_four_forbidden_4 = str_reverse(dead_four_forbidden_4);
 
-    char *r_dead_four_B_4 = str_reverse(dead_four_B_4);
-    char *r_dead_four_B_5 = str_reverse(dead_four_B_5);
+    char* r_dead_four_B_4 = str_reverse(dead_four_B_4);
+    char* r_dead_four_B_5 = str_reverse(dead_four_B_5);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
+    char* str = to_string(x, y, direction);
 
-        res += str_match(dead_four_B_1, str);
-        res -= str_match(dead_four_forbidden_1, str);
+    res += str_match(dead_four_B_1, str);
+    res -= str_match(dead_four_forbidden_1, str);
+    res += str_match(dead_four_B_2, str);
+    res -= str_match(dead_four_forbidden_2, str);
+    res -= str_match(dead_four_forbidden_3, str);
+    res += str_match(dead_four_B_3, str);
+    res -= str_match(dead_four_forbidden_4, str);
+    res += str_match(dead_four_B_4, str);
+    res += str_match(dead_four_B_5, str);
 
-        res += str_match(dead_four_B_2, str);
-        res -= str_match(dead_four_forbidden_2, str);
-        res -= str_match(dead_four_forbidden_3, str);
+    // reverse
+    res -= str_match(r_dead_four_forbidden_1, str);
+    res += str_match(r_dead_four_B_2, str);
+    res -= str_match(r_dead_four_forbidden_2, str);
+    res -= str_match(r_dead_four_forbidden_3, str);
+    res += str_match(r_dead_four_B_3, str);
+    res -= str_match(r_dead_four_forbidden_4, str);
+    res += str_match(r_dead_four_B_4, str);
+    res += str_match(r_dead_four_B_5, str);
 
-        res += str_match(dead_four_B_3, str);
-        res -= str_match(dead_four_forbidden_4, str);
+    // symmetry
+    res += str_match(s_dead_four_forbidden_1, str);
+    res += str_match(s_dead_four_forbidden_1_a, str);
+    res -= str_match(s_dead_four_B_2, str);
+    res -= str_match(s_dead_four_B_2_a, str);
+    res += str_match(s_dead_four_forbidden_2, str);
+    res += str_match(s_dead_four_forbidden_2_a, str);
+    res += str_match(s_dead_four_forbidden_3, str);
+    res += str_match(s_dead_four_forbidden_3_a, str);
 
-        res += str_match(dead_four_B_4, str);
-        res += str_match(dead_four_B_5, str);
+    res += str_match_side(e_dead_four_B_6, str);
+    res -= str_match_side(e_dead_four_B_6_forbidden, str);
 
-        // reverse
-        res -= str_match(r_dead_four_forbidden_1, str);
-
-        res += str_match(r_dead_four_B_2, str);
-        res -= str_match(r_dead_four_forbidden_2, str);
-        res -= str_match(r_dead_four_forbidden_3, str);
-
-        res += str_match(r_dead_four_B_3, str);
-        res -= str_match(r_dead_four_forbidden_4, str);
-
-        res += str_match(r_dead_four_B_4, str);
-        res += str_match(r_dead_four_B_5, str);
-
-        // symmetry
-        res += str_match(s_dead_four_forbidden_1, str);
-        res += str_match(s_dead_four_forbidden_1_a, str);
-
-        res -= str_match(s_dead_four_B_2, str);
-        res -= str_match(s_dead_four_B_2_a, str);
-
-        res += str_match(s_dead_four_forbidden_2, str);
-        res += str_match(s_dead_four_forbidden_2_a, str);
-        res += str_match(s_dead_four_forbidden_3, str);
-        res += str_match(s_dead_four_forbidden_3_a, str);
-
-        res += str_match_side(e_dead_four_B_6, str);
-        res -= str_match_side(e_dead_four_B_6_forbidden, str);
-
-        free(str);
-    }
+    free(str);
     free(r_dead_four_forbidden_1);
-
     free(r_dead_four_B_2);
     free(r_dead_four_forbidden_2);
     free(r_dead_four_forbidden_3);
-
     free(r_dead_four_B_3);
     free(r_dead_four_forbidden_4);
-
     free(r_dead_four_B_4);
     free(r_dead_four_B_5);
 
     return res;
 }
-int num_dead_four_white(int x, int y)
+int num_dead_four_white(int x, int y, int direction)
 {
     int res = 0;
 
-    char *r_dead_four_W_1 = str_reverse(dead_four_W_1);
-    char *r_dead_four_W_2 = str_reverse(dead_four_W_2);
-    char *r_dead_four_W_3 = str_reverse(dead_four_W_3);
+    char* r_dead_four_W_1 = str_reverse(dead_four_W_1);
+    char* r_dead_four_W_2 = str_reverse(dead_four_W_2);
+    char* r_dead_four_W_3 = str_reverse(dead_four_W_3);
 
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
+    char* str = to_string(x, y, direction);
 
-        res += str_match(dead_four_W_1, str);
-        res += str_match(dead_four_W_2, str);
-        res += str_match(dead_four_W_3, str);
+    res += str_match(dead_four_W_1, str);
+    res += str_match(dead_four_W_2, str);
+    res += str_match(dead_four_W_3, str);
 
-        // reverse
-        res += str_match(r_dead_four_W_1, str);
-        res += str_match(r_dead_four_W_2, str);
-        res += str_match(r_dead_four_W_3, str);
+    // reverse
+    res += str_match(r_dead_four_W_1, str);
+    res += str_match(r_dead_four_W_2, str);
+    res += str_match(r_dead_four_W_3, str);
 
-        // symmetry
-        res -= str_match(s_dead_four_W_2, str);
+    // symmetry
+    res -= str_match(s_dead_four_W_2, str);
 
-        res += str_match_side(e_dead_three_W_7, str);
+    res += str_match_side(e_dead_three_W_7, str);
 
-        free(str);
-    }
+    free(str);
     free(r_dead_four_W_1);
     free(r_dead_four_W_2);
     free(r_dead_four_W_3);
@@ -593,48 +552,44 @@ int num_dead_four_white(int x, int y)
     return res;
 }
 
-int is_five_black(int x, int y)
+int is_five_black(int x, int y, int direction)
 {
-    for (int direction = 1; direction <= 4; direction++)
+    
+    char* str = to_string(x, y, direction);
+    if (str_match(five_forbidden, str))
     {
-        char *str = to_string(x, y, direction);
-        if (str_match(five_forbidden, str))
-        {
-            free(str);
-            // 触发禁手
-            return -1;
-        }
-        if (str_match(five_B, str))
-        {
-            free(str);
-            return 1;
-        }
         free(str);
+        // 触发禁手
+        return -1;
     }
+    if (str_match(five_B, str))
+    {
+        free(str);
+        return 1;
+    }
+    free(str);
+
     return 0;
 }
-int is_five_white(int x, int y)
-{
-    for (int direction = 1; direction <= 4; direction++)
+int is_five_white(int x, int y, int direction)
+{ 
+    char* str = to_string(x, y, direction);
+    if (str_match(five_W, str))
     {
-        char *str = to_string(x, y, direction);
-        if (str_match(five_W, str))
-        {
-            free(str);
-            return 1;
-        }
         free(str);
+        return 1;
     }
+    free(str);
+    
     return 0;
 }
 
-int num_overline(int x, int y)
+int num_overline(int x, int y, int direction)
 {
     int res = 0;
-    for (int direction = 1; direction <= 4; direction++)
-    {
-        char *str = to_string(x, y, direction);
-        res += str_match(five_forbidden, str);
-    }
+    
+    char* str = to_string(x, y, direction);
+    res += str_match(five_forbidden, str);
+    
     return res;
 }

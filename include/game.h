@@ -87,7 +87,7 @@ char * str_reverse(char * str);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'死二'的数目
  **/
-int num_dead_two_black(int x, int y);
+int num_dead_two_black(int x, int y, int direction);
 
 /**
  * @brief 统计指定白色棋子周围'死二'的数目
@@ -95,7 +95,7 @@ int num_dead_two_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定白色棋子周围'死二'的数目
  **/
-int num_dead_two_white(int x, int y);
+int num_dead_two_white(int x, int y, int direction);
 
 /**
  * @brief 统计指定黑色棋子周围'活二'的数目
@@ -103,7 +103,7 @@ int num_dead_two_white(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'活二'的数目
  **/
-int num_active_two_black(int x, int y);
+int num_active_two_black(int x, int y, int direction);
 
 /**
  * @brief 统计指定白色棋子周围'活二'的数目
@@ -111,7 +111,7 @@ int num_active_two_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定白色棋子周围'活二'的数目
  **/
-int num_active_two_white(int x, int y);
+int num_active_two_white(int x, int y, int direction);
 
 /**
  * @brief 统计指定黑色棋子周围'死三'的数目
@@ -119,7 +119,7 @@ int num_active_two_white(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'死三'的数目
  **/
-int num_dead_three_black(int x, int y);
+int num_dead_three_black(int x, int y, int direction);
 
 /**
  * @brief 统计指定白色棋子周围'死三'的数目
@@ -127,7 +127,7 @@ int num_dead_three_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定白色棋子周围'死三'的数目
  **/
-int num_dead_three_white(int x, int y);
+int num_dead_three_white(int x, int y, int direction);
 
 /**
  * @brief 统计指定黑色棋子周围'活三'的数目
@@ -135,7 +135,7 @@ int num_dead_three_white(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'活三'的数目
  **/
-int num_active_three_black(int x, int y);
+int num_active_three_black(int x, int y, int direction);
 
 /**
  * @brief 统计指定白色棋子周围'活三'的数目
@@ -143,7 +143,7 @@ int num_active_three_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定白色棋子周围'活三'的数目
  **/
-int num_active_three_white(int x, int y);
+int num_active_three_white(int x, int y, int direction);
 
 /**
  * @brief 统计指定黑色棋子周围'活四'的数目
@@ -151,7 +151,7 @@ int num_active_three_white(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'活四'的数目
  **/
-int num_active_four_black(int x, int y);
+int num_active_four_black(int x, int y, int direction);
 
 /**
  * @brief 统计指定白色棋子周围'活四'的数目
@@ -159,7 +159,7 @@ int num_active_four_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定白色棋子周围'活四'的数目
  **/
-int num_active_four_white(int x, int y);
+int num_active_four_white(int x, int y, int direction);
 
 /**
  * @brief 统计指定黑色棋子周围'死四'的数目
@@ -167,7 +167,7 @@ int num_active_four_white(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'死四'的数目
  **/
-int num_dead_four_black(int x, int y);
+int num_dead_four_black(int x, int y, int direction);
 
 /**
  * @brief 统计指定白色棋子周围'死四'的数目
@@ -175,7 +175,7 @@ int num_dead_four_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定白色棋子周围'死四'的数目
  **/
-int num_dead_four_white(int x, int y);
+int num_dead_four_white(int x, int y, int direction);
 
 /**
  * @brief 统计指定黑色棋子周围'长连'的数目
@@ -183,7 +183,7 @@ int num_dead_four_white(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 指定黑色棋子周围'长连'的数目
  **/
-int num_overline(int x, int y);
+int num_overline(int x, int y, int direction);
 
 /**
  * @brief 判断指定黑色棋子周围是否形成五连
@@ -191,7 +191,7 @@ int num_overline(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 若形成五连返回1,否则返回0
  **/
-int is_five_black(int x, int y);
+int is_five_black(int x, int y, int direction);
 
 /**
  * @brief 判断指定白色棋子周围是否形成五连
@@ -199,6 +199,6 @@ int is_five_black(int x, int y);
  * @param y 指定棋子的y坐标
  * @return 若形成五连返回1,否则返回0
  **/
-int is_five_white(int x, int y);
+int is_five_white(int x, int y, int direction);
 
 #endif

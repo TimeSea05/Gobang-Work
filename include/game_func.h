@@ -16,4 +16,6 @@ void drop_pieces(int type);
 
 // @brief 判断是否有一方已经胜出
 int game_win();
+
+int is_forbidden(int x, int y, int direction);
 #endif

@@ -16,6 +16,7 @@ int main()
     init_record_board();
     record_to_display_array();
     display_board();
+    
     while(1)
     {
         if (latest_x != -1 && latest_y != -1)
@@ -30,7 +31,7 @@ int main()
             printf("Black wins!\n");
             break;
         }
-        negative_max(WHITEPIECE, DEPTH, -99999999, 99999999);
+        negative_max(BLACKPIECE, DEPTH, -99999999, 99999999);
         record_board[next_point_x][next_point_y] = WHITETRIANGLE;
         record_board[latest_x][latest_y] = BLACKPIECE;
         latest_x = next_point_x, latest_y = next_point_y;
@@ -42,5 +43,16 @@ int main()
             break;
         }
     }
+    
+    /*
+    for (int i = 0; i < 5; i++)
+    {
+        drop_pieces(BLACKPIECE);
+        record_to_display_array();
+        display_board();
+    }
+    if (game_win() == BLACKPIECE)
+        printf("黑棋赢了！\n");
+    */
     return 0;
 }

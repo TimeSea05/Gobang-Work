@@ -12,64 +12,151 @@ extern int record_board[SIZE][SIZE];
 
 extern int next_point_x, next_point_y;
 
-int calculate_mark(int x, int y, int type)
+int calculate_mark(int type)
 {
-    int mark = 0;
-    switch (type)
+    int mark_b = 0, mark_w = 0;
+
+    /*******************计算黑棋得分*******************/
+    // HORIZONTAL
+    for (int i = 0; i < SIZE; i++)
     {
-    case BLACKPIECE:
-        mark += num_dead_two_black(x, y) * DEAD_TWO;
-        mark += num_active_two_black(x, y) * ACTIVE_TWO;
-        mark += num_dead_three_black(x, y) * DEAD_THREE;
-        mark += num_active_three_black(x, y) * ACTIVE_THREE;
-        mark += num_dead_four_black(x, y) * DEAD_FOUR;
-        mark += num_active_four_black(x, y) * ACTIVE_FOUR;
-        mark += is_five_black(x, y) * FIVE;
-        mark += is_forbidden(x, y) * FORBIDDEN;
-        break;
-    case WHITEPIECE:
-        mark += num_dead_two_white(x, y) * DEAD_TWO;
-        mark += num_active_two_white(x, y) * ACTIVE_TWO;
-        mark += num_dead_three_white(x, y) * DEAD_THREE;
-        mark += num_active_three_white(x, y) * ACTIVE_THREE;
-        mark += num_dead_four_white(x, y) * DEAD_FOUR;
-        mark += num_active_four_white(x, y) * ACTIVE_FOUR;
-        mark += is_five_white(x, y) * FIVE;
-        break;
+        mark_b += num_dead_two_black(i, 0, HORIZONTAL) * DEAD_TWO;
+        mark_b += num_active_two_black(i, 0, HORIZONTAL) * ACTIVE_TWO;
+        mark_b += num_dead_three_black(i, 0, HORIZONTAL) * DEAD_THREE;
+        mark_b += num_active_three_black(i, 0, HORIZONTAL) * ACTIVE_THREE;
+        mark_b += num_dead_four_black(i, 0, HORIZONTAL) * DEAD_FOUR;
+        mark_b += num_active_four_black(i, 0, HORIZONTAL) * ACTIVE_FOUR;
+        mark_b += is_five_black(i, 0, HORIZONTAL) * FIVE;
+        mark_b += is_forbidden(i, 0, HORIZONTAL) * FORBIDDEN;
     }
-    return mark;
-}
+    // VERTICAL
+    for (int j = 0; j < SIZE; j++)
+    {
+        mark_b += num_dead_two_black(0, j, VERTICAL) * DEAD_TWO;
+        mark_b += num_active_two_black(0, j, VERTICAL) * ACTIVE_TWO;
+        mark_b += num_dead_three_black(0, j, VERTICAL) * DEAD_THREE;
+        mark_b += num_active_three_black(0, j, VERTICAL) * ACTIVE_THREE;
+        mark_b += num_dead_four_black(0, j, VERTICAL) * DEAD_FOUR;
+        mark_b += num_active_four_black(0, j, VERTICAL) * ACTIVE_FOUR;
+        mark_b += is_five_black(0, j, VERTICAL) * FIVE;
+        mark_b += is_forbidden(0, j, VERTICAL) * FORBIDDEN;
+    }
+    // MAIN DIAGONAL
+    for (int i = 0; i < SIZE; i++)
+    {
+        mark_b += num_dead_two_black(0, i, MAIN_DIAGONAL) * DEAD_TWO;
+        mark_b += num_active_two_black(0, i, MAIN_DIAGONAL) * ACTIVE_TWO;
+        mark_b += num_dead_three_black(0, i, MAIN_DIAGONAL) * DEAD_THREE;
+        mark_b += num_active_three_black(0, i, MAIN_DIAGONAL) * ACTIVE_THREE;
+        mark_b += num_dead_four_black(0, i, MAIN_DIAGONAL) * DEAD_FOUR;
+        mark_b += num_active_four_black(0, i, MAIN_DIAGONAL) * ACTIVE_FOUR;
+        mark_b += is_five_black(0, i, MAIN_DIAGONAL) * FIVE;
+        mark_b += is_forbidden(0, i, MAIN_DIAGONAL) * FORBIDDEN;
+    }
+    for (int i = 0; i < SIZE - 1; i++)
+    {
+        mark_b += num_dead_two_black(14, i, MAIN_DIAGONAL) * DEAD_TWO;
+        mark_b += num_active_two_black(14, i, MAIN_DIAGONAL) * ACTIVE_TWO;
+        mark_b += num_dead_three_black(14, i, MAIN_DIAGONAL) * DEAD_THREE;
+        mark_b += num_active_three_black(14, i, MAIN_DIAGONAL) * ACTIVE_THREE;
+        mark_b += num_dead_four_black(14, i, MAIN_DIAGONAL) * DEAD_FOUR;
+        mark_b += num_active_four_black(14, i, MAIN_DIAGONAL) * ACTIVE_FOUR;
+        mark_b += is_five_black(14, i, MAIN_DIAGONAL) * FIVE;
+        mark_b += is_forbidden(14, i, MAIN_DIAGONAL) * FORBIDDEN;
+    }
+    // SUB DIAGONAL
+    for (int j = 0; j < SIZE; j++)
+    {
+        mark_b += num_dead_two_black(0, j, SUB_DIAGONAL) * DEAD_TWO;
+        mark_b += num_active_two_black(0, j, SUB_DIAGONAL) * ACTIVE_TWO;
+        mark_b += num_dead_three_black(0, j, SUB_DIAGONAL) * DEAD_THREE;
+        mark_b += num_active_three_black(0, j, SUB_DIAGONAL) * ACTIVE_THREE;
+        mark_b += num_dead_four_black(0, j, SUB_DIAGONAL) * DEAD_FOUR;
+        mark_b += num_active_four_black(0, j, SUB_DIAGONAL) * ACTIVE_FOUR;
+        mark_b += is_five_black(0, j, SUB_DIAGONAL) * FIVE;
+        mark_b += is_forbidden(0, j, SUB_DIAGONAL) * FORBIDDEN;
+    }
+    for (int j = 0; j < SIZE - 1; j++)
+    {
+        mark_b += num_dead_two_black(14, j, SUB_DIAGONAL) * DEAD_TWO;
+        mark_b += num_active_two_black(14, j, SUB_DIAGONAL) * ACTIVE_TWO;
+        mark_b += num_dead_three_black(14, j, SUB_DIAGONAL) * DEAD_THREE;
+        mark_b += num_active_three_black(14, j, SUB_DIAGONAL) * ACTIVE_THREE;
+        mark_b += num_dead_four_black(14, j, SUB_DIAGONAL) * DEAD_FOUR;
+        mark_b += num_active_four_black(14, j, SUB_DIAGONAL) * ACTIVE_FOUR;
+        mark_b += is_five_black(14, j, SUB_DIAGONAL) * FIVE;
+        mark_b += is_forbidden(14, j, SUB_DIAGONAL) * FORBIDDEN;
+    }
 
-int evaluate(int x, int y, int type)
-{
-    // 评估的方式：计算放置棋子前后在坐标(x,y)处产生的分数差
-    // 此处已经假定(x,y)处有棋子
-    // 'o' represents 'original', 'n' represents 'now'
-    int black_mark_o = calculate_mark(x, y, BLACKPIECE);
-    int white_mark_o = calculate_mark(x, y, WHITEPIECE);
-    record_board[x][y] = EMPTY;
-    int black_mark_n = calculate_mark(x, y, BLACKPIECE);
-    int white_mark_n = calculate_mark(x, y, WHITEPIECE);
-    record_board[x][y] = type;
+    /*******************计算白棋得分*******************/
+    // HORIZONTAL
+    for (int i = 0; i < SIZE; i++)
+    {
+        mark_w += num_dead_two_white(i, 0, HORIZONTAL) * DEAD_TWO;
+        mark_w += num_active_two_white(i, 0, HORIZONTAL) * ACTIVE_TWO;
+        mark_w += num_dead_three_white(i, 0, HORIZONTAL) * DEAD_THREE;
+        mark_w += num_active_three_white(i, 0, HORIZONTAL) * ACTIVE_THREE;
+        mark_w += num_dead_four_white(i, 0, HORIZONTAL) * DEAD_FOUR;
+        mark_w += num_active_four_white(i, 0, HORIZONTAL) * ACTIVE_FOUR;
+        mark_w += is_five_white(i, 0, HORIZONTAL) * FIVE;
+    }
+    // VERTICAL
+    for (int j = 0; j < SIZE; j++)
+    {
+        mark_w += num_dead_two_white(0, j, VERTICAL) * DEAD_TWO;
+        mark_w += num_active_two_white(0, j, VERTICAL) * ACTIVE_TWO;
+        mark_w += num_dead_three_white(0, j, VERTICAL) * DEAD_THREE;
+        mark_w += num_active_three_white(0, j, VERTICAL) * ACTIVE_THREE;
+        mark_w += num_dead_four_white(0, j, VERTICAL) * DEAD_FOUR;
+        mark_w += num_active_four_white(0, j, VERTICAL) * ACTIVE_FOUR;
+        mark_w += is_five_white(0, j, VERTICAL) * FIVE;
+    }
+    // MAINDIAGONAL
+    for (int i = 0; i < SIZE; i++)
+    {
+        mark_w += num_dead_two_white(0, i, MAIN_DIAGONAL) * DEAD_TWO;
+        mark_w += num_active_two_white(0, i, MAIN_DIAGONAL) * ACTIVE_TWO;
+        mark_w += num_dead_three_white(0, i, MAIN_DIAGONAL) * DEAD_THREE;
+        mark_w += num_active_three_white(0, i, MAIN_DIAGONAL) * ACTIVE_THREE;
+        mark_w += num_dead_four_white(0, i, MAIN_DIAGONAL) * DEAD_FOUR;
+        mark_w += num_active_four_white(0, i, MAIN_DIAGONAL) * ACTIVE_FOUR;
+        mark_w += is_five_white(0, i, MAIN_DIAGONAL) * FIVE;
+    }
+    for (int i = 0; i < SIZE - 1; i++)
+    {
+        mark_w += num_dead_two_white(14, i, MAIN_DIAGONAL) * DEAD_TWO;
+        mark_w += num_active_two_white(14, i, MAIN_DIAGONAL) * ACTIVE_TWO;
+        mark_w += num_dead_three_white(14, i, MAIN_DIAGONAL) * DEAD_THREE;
+        mark_w += num_active_three_white(14, i, MAIN_DIAGONAL) * ACTIVE_THREE;
+        mark_w += num_dead_four_white(14, i, MAIN_DIAGONAL) * DEAD_FOUR;
+        mark_w += num_active_four_white(14, i, MAIN_DIAGONAL) * ACTIVE_FOUR;
+        mark_w += is_five_white(14, i, MAIN_DIAGONAL) * FIVE;
+    }
+    // SUB DIAGONAL
+    for (int j = 0; j < SIZE; j++)
+    {
+        mark_w += num_dead_two_white(0, j, SUB_DIAGONAL) * DEAD_TWO;
+        mark_w += num_active_two_white(0, j, SUB_DIAGONAL) * ACTIVE_TWO;
+        mark_w += num_dead_three_white(0, j, SUB_DIAGONAL) * DEAD_THREE;
+        mark_w += num_active_three_white(0, j, SUB_DIAGONAL) * ACTIVE_THREE;
+        mark_w += num_dead_four_white(0, j, SUB_DIAGONAL) * DEAD_FOUR;
+        mark_w += num_active_four_white(0, j, SUB_DIAGONAL) * ACTIVE_FOUR;
+        mark_w += is_five_white(0, j, SUB_DIAGONAL) * FIVE;
+    }
+    for (int j = 0; j < SIZE - 1; j++)
+    {
+        mark_w += num_dead_two_white(14, j, SUB_DIAGONAL) * DEAD_TWO;
+        mark_w += num_active_two_white(14, j, SUB_DIAGONAL) * ACTIVE_TWO;
+        mark_w += num_dead_three_white(14, j, SUB_DIAGONAL) * DEAD_THREE;
+        mark_w += num_active_three_white(14, j, SUB_DIAGONAL) * ACTIVE_THREE;
+        mark_w += num_dead_four_white(14, j, SUB_DIAGONAL) * DEAD_FOUR;
+        mark_w += num_active_four_white(14, j, SUB_DIAGONAL) * ACTIVE_FOUR;
+        mark_w += is_five_white(14, j, SUB_DIAGONAL) * FIVE;
+    }
+    
     if (type == BLACKPIECE)
-        return (black_mark_o - black_mark_n) - (white_mark_o - white_mark_n);
-    return (white_mark_o - white_mark_n) - (black_mark_o - black_mark_n) * 10;
-}
-
-int is_forbidden(int x, int y)
-{
-    int res = 0;
-    if (is_five_black(x, y))
-        return 0;
-    if (num_active_three_black(x, y) > 1)
-        res++;
-    if (num_dead_four_black(x, y) + num_active_four_black(x, y) > 1)
-        res++;
-    if (num_overline(x, y))
-        res++;
-    if (res > 0)
-        return 1;
-    return 0;
+        return mark_b - 2 * mark_w;
+    return mark_w - 2 * mark_b;
 }
 
 int has_neighbor(int x, int y)
@@ -98,7 +185,7 @@ int trans_type(int type)
 int negative_max(int type, int depth, int alpha, int beta)
 {
     if (game_win() || depth == 0)
-        return evaluate(latest_x, latest_y, trans_type(type));
+        return calculate_mark(type);
     for (int i = 1; NOT_ALL_CROSS_BORDER; i++)
     {
         for (int k = -i + 1; k <= i - 1; k++)
@@ -110,7 +197,8 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + k, latest_y = latest_y - i;
                 record_board[latest_x][latest_y] = type;
-                int value = evaluate(latest_x, latest_y, type);
+                // int value = calculate_mark(type);   
+                int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
                 {
@@ -133,7 +221,8 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + k, latest_y = latest_y + i;
                 record_board[latest_x][latest_y] = type;
-                int value = evaluate(latest_x, latest_y, type);
+                // int value = calculate_mark(type);
+                int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
                 {
@@ -160,7 +249,8 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x - i, latest_y = latest_y + j;
                 record_board[latest_x][latest_y] = type;
-                int value = evaluate(latest_x, latest_y, type);
+                // int value = calculate_mark(type);
+                int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
                 {
@@ -183,7 +273,8 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + i, latest_y = latest_y + j;
                 record_board[latest_x][latest_y] = type;
-                int value = evaluate(latest_x, latest_y, type);
+                // int value = calculate_mark(type);
+                int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
                 {

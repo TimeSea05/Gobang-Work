@@ -122,11 +122,80 @@ void drop_pieces(int type)
 // detect winnership
 int game_win()
 {
-	if (is_five_black(latest_x, latest_y) == -1)
-		return FORBIDDEN;
-	else if (is_five_black(latest_x, latest_y) == 1)
-		return BLACKPIECE;
-	else if (is_five_white(latest_x, latest_y))
-		return WHITEPIECE;
+	// HORIZONTAL
+	for (int i = 0; i < SIZE; i++)
+	{
+		if (is_five_black(i, 0, HORIZONTAL))
+			return BLACKPIECE;
+		else if (is_forbidden(i, 0, HORIZONTAL))
+			return FORBIDDEN;
+		else if (is_five_white(i, 0, HORIZONTAL))
+			return WHITEPIECE;
+	}
+	// VERTICAL
+	for (int j = 0; j < SIZE; j++)
+	{
+		if (is_five_black(0, j, VERTICAL))
+			return BLACKPIECE;
+		else if (is_forbidden(0, j, VERTICAL))
+			return FORBIDDEN;
+		else if (is_five_white(0, j, VERTICAL))
+			return WHITEPIECE;
+	}
+	// MAIN_DIAGONAL
+	for (int i = 0; i < SIZE; i++)
+	{
+		if (is_five_black(0, i, MAIN_DIAGONAL))
+			return BLACKPIECE;
+		else if (is_forbidden(0, i, MAIN_DIAGONAL))
+			return FORBIDDEN;
+		else if (is_five_white(0, i, MAIN_DIAGONAL))
+			return WHITEPIECE;
+	}
+	for (int i = 0; i < SIZE - 1; i++)
+	{
+		if (is_five_black(14, i, MAIN_DIAGONAL))
+			return BLACKPIECE;
+		else if (is_forbidden(14, i, MAIN_DIAGONAL))
+			return FORBIDDEN;
+		else if (is_five_white(14, i, MAIN_DIAGONAL))
+			return WHITEPIECE;
+	}
+	// SUB_DIAGONAL
+	for (int j = 0; j < SIZE; j++)
+	{
+		if (is_five_black(0, j, SUB_DIAGONAL))
+			return BLACKPIECE;
+		else if (is_forbidden(0, j, SUB_DIAGONAL))
+			return FORBIDDEN;
+		else if (is_five_white(0, j, SUB_DIAGONAL))
+			return WHITEPIECE;
+	}
+	for (int j = 0; j < SIZE - 1; j++)
+	{
+		if (is_five_black(14, j, SUB_DIAGONAL))
+			return BLACKPIECE;
+		else if (is_forbidden(14, j, SUB_DIAGONAL))
+			return FORBIDDEN;
+		else if (is_five_white(14, j, SUB_DIAGONAL))
+			return WHITEPIECE;
+	}
 	return 0;
+}
+
+
+int is_forbidden(int x, int y, int direction)
+{
+    int res = 0;
+    if (is_five_black(x, y, direction))
+        return 0;
+    if (num_active_three_black(x, y, direction) > 1)
+        res++;
+    if (num_dead_four_black(x, y, direction) + num_active_four_black(x, y, direction) > 1)
+        res++;
+    if (num_overline(x, y, direction))
+        res++;
+    if (res > 0)
+        return 1;
+    return 0;
 }
