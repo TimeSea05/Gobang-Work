@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "ai.h": "c",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "constants.h": "c"
     }
 }
