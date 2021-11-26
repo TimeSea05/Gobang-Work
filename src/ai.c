@@ -7,6 +7,7 @@
 extern int latest_x, latest_y;
 extern int record_board[SIZE][SIZE];
 
+// 判断搜索是否进行继续的判据
 #define NOT_ALL_CROSS_BORDER \
     latest_x - i >= 0 || latest_x + i < SIZE || latest_y - i >= 0 || latest_y + i < SIZE
 
@@ -155,8 +156,8 @@ int calculate_mark(int type)
     }
     
     if (type == BLACKPIECE)
-        return mark_b - 2 * mark_w;
-    return mark_w - 2 * mark_b;
+        return mark_b - 0.5 * mark_w;
+    return mark_w - 0.5 * mark_b;
 }
 
 int has_neighbor(int x, int y)
@@ -174,18 +175,20 @@ int has_neighbor(int x, int y)
     return 0;
 }
 
+// type: BLACKPIECE or WHITEPIECE
 int trans_type(int type)
 {
     if (type == BLACKPIECE)
         return WHITEPIECE;
     return BLACKPIECE;
 }
-// type: BLACKPIECE or WHITEPIECE
 
 int negative_max(int type, int depth, int alpha, int beta)
 {
     if (game_win() || depth == 0)
         return calculate_mark(type);
+    // 搜索方式：以刚下的棋的位置为中心，一圈一圈向外进行搜索
+    // 宏定义 NOT_ALL_CROSS_BORDER 是判断搜索是否进行继续的判据
     for (int i = 1; NOT_ALL_CROSS_BORDER; i++)
     {
         for (int k = -i + 1; k <= i - 1; k++)
@@ -193,11 +196,11 @@ int negative_max(int type, int depth, int alpha, int beta)
             if (latest_x + k >= 0 && latest_x + k < SIZE && latest_y - i >= 0
                 && record_board[latest_x + k][latest_y - i] == EMPTY
                 && has_neighbor(latest_x + k, latest_y - i))
+                // 如果搜索的位置周围没有棋子，那么我们就不再考虑这个位置
             {
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + k, latest_y = latest_y - i;
                 record_board[latest_x][latest_y] = type;
-                // int value = calculate_mark(type);   
                 int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
@@ -221,7 +224,6 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + k, latest_y = latest_y + i;
                 record_board[latest_x][latest_y] = type;
-                // int value = calculate_mark(type);
                 int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
@@ -249,7 +251,6 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x - i, latest_y = latest_y + j;
                 record_board[latest_x][latest_y] = type;
-                // int value = calculate_mark(type);
                 int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
@@ -273,7 +274,6 @@ int negative_max(int type, int depth, int alpha, int beta)
                 int latest_x_copy = latest_x, latest_y_copy = latest_y;
                 latest_x = latest_x + i, latest_y = latest_y + j;
                 record_board[latest_x][latest_y] = type;
-                // int value = calculate_mark(type);
                 int value = -negative_max(trans_type(type), depth - 1 , -beta, -alpha);
                 record_board[latest_x][latest_y] = EMPTY;
                 if (value > alpha)
