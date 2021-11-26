@@ -17,42 +17,26 @@ int main()
     record_to_display_array();
     display_board();
     
-    while(1)
+    while (1)
     {
-        if (latest_x != -1 && latest_y != -1)
-            record_board[latest_x][latest_y] = WHITEPIECE;
-        drop_pieces(BLACKPIECE);
-        record_to_display_array();
-        display_board();
-        if (game_win() == FORBIDDEN)
-            printf("White wins!\n");
-        else if (game_win() == BLACKPIECE)
+        printf("请选择游戏模式：\n");
+        printf("人人对战请输入1; 人机对战请输入2;\n");
+        int mode;
+        scanf("%d", &mode);
+        getchar();
+        if (mode == 1)
         {
-            printf("Black wins!\n");
+            person_vs_person();
             break;
         }
-        negative_max(BLACKPIECE, DEPTH, -99999999, 99999999);
-        record_board[next_point_x][next_point_y] = WHITETRIANGLE;
-        record_board[latest_x][latest_y] = BLACKPIECE;
-        latest_x = next_point_x, latest_y = next_point_y;
-        record_to_display_array();
-        display_board();
-        if (game_win() == WHITEPIECE)
+        else if (mode == 2)
         {
-            printf("White wins!\n");
+            person_vs_computer();
             break;
         }
+        else
+            printf("无法识别，请重新输入！");
     }
     
-    /*
-    for (int i = 0; i < 5; i++)
-    {
-        drop_pieces(BLACKPIECE);
-        record_to_display_array();
-        display_board();
-    }
-    if (game_win() == BLACKPIECE)
-        printf("黑棋赢了！\n");
-    */
     return 0;
 }
