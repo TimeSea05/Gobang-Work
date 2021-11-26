@@ -1,6 +1,6 @@
 #include "constants.h"
 
-// the board
+// 棋盘数组
 wchar_t init_display_board_array[SIZE][SIZE + 1] =
 {
 	{L'┏',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┯',L'┓'},
@@ -20,19 +20,17 @@ wchar_t init_display_board_array[SIZE][SIZE + 1] =
 	{L'┗',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┷',L'┛'}
 };
 
-// this array is used to show the board(along with pieces)
+// 显示数组
 wchar_t display_board_array[SIZE][SIZE + 1];
 
-// this array is used to record the board(along with pieces)
+// 记录数组
 int record_board[SIZE][SIZE];
 
-// the position of the piece placed just now
+// 最后放置棋子的位置
 int latest_x = -1, latest_y = -1;
 
-// the type of previous pieces
-// -1 for no pieces 
-// 0 for black pieces && 1 for white pieces
+// 最后放置棋子的类型
 int latest_type = -1;
 
-// where AI is going to put its next piece
+// AI将要放置棋子的位置
 int next_point_x = 0, next_point_y = 0;
