@@ -5,21 +5,22 @@
 #include "game_func.h"
 #include "game.h"
 #include "constants.h"
+#include "ai.h"
 
 extern wchar_t init_display_board_array[SIZE][SIZE + 1];
 extern wchar_t display_board_array[SIZE][SIZE + 1];
 extern int record_board[SIZE][SIZE];
 extern int latest_x, latest_y;
 extern int latest_type;
+extern int next_point_x, next_point_y;
 
-// black pieces
+// 黑色棋子
 wchar_t play1_pic = L'●'; 
 wchar_t play1_current_pic = L'▲';
-// white pieces
+// 白色棋子
 wchar_t play2_pic = L'○'; 
 wchar_t play2_current_pic = L'△';
 
-// initialize the chess board
 void init_record_board()
 {
 	// set record_board to zero by double loop;
@@ -27,8 +28,6 @@ void init_record_board()
 		for (int j = 0; j < SIZE; j++)
 			record_board[i][j] = 0;
 }
-
-// initialize adisplay_board according to record_board
 void record_to_display_array()
 {
 	//第一步：将init_display_board_array中记录的空棋盘，复制到display_board_array中
@@ -48,8 +47,6 @@ void record_to_display_array()
 			else if (record_board[i][j] == WHITETRIANGLE)
 				display_board_array[i][j] = play2_current_pic;
 }
-
-// show the board(along with pieces)
 void display_board()
 {
 	int i, j;	
@@ -75,14 +72,11 @@ void display_board()
 	printf("\n\n");
 }
 
-// drop pieces
-
 void drop_pieces(int type)
 {
-	printf("Please enter the position of the piece(e.g. H1 or h1):\n");
+	printf("请输入你要下的棋子的坐标(e.g. H1 or h1):\n");
 	while (1)
 	{
-		// input the position that you gonna put pieces in 
 		int command_x;
 		char command_y;
 		scanf("%c%d", &command_y, &command_x);
@@ -103,7 +97,7 @@ void drop_pieces(int type)
 			if (type == BLACKPIECE)
 				record_board[coordinate_x][coordinate_y] = BLACKTRIANGLE;
 			else if (type == WHITEPIECE)
-				record_board[coordinate_x][coordinate_y] = WHITEPIECE;
+				record_board[coordinate_x][coordinate_y] = WHITETRIANGLE;
 			latest_x = coordinate_x;
 			latest_y = coordinate_y;
 			latest_type = type;
@@ -119,16 +113,16 @@ void drop_pieces(int type)
 	}
 }
 
-// detect winnership
 int game_win()
 {
+	if (is_forbidden())
+		return FORBIDDEN;
+
 	// HORIZONTAL
 	for (int i = 0; i < SIZE; i++)
 	{
 		if (is_five_black(i, 0, HORIZONTAL))
 			return BLACKPIECE;
-		else if (is_forbidden(i, 0, HORIZONTAL))
-			return FORBIDDEN;
 		else if (is_five_white(i, 0, HORIZONTAL))
 			return WHITEPIECE;
 	}
@@ -137,8 +131,6 @@ int game_win()
 	{
 		if (is_five_black(0, j, VERTICAL))
 			return BLACKPIECE;
-		else if (is_forbidden(0, j, VERTICAL))
-			return FORBIDDEN;
 		else if (is_five_white(0, j, VERTICAL))
 			return WHITEPIECE;
 	}
@@ -147,8 +139,6 @@ int game_win()
 	{
 		if (is_five_black(0, i, MAIN_DIAGONAL))
 			return BLACKPIECE;
-		else if (is_forbidden(0, i, MAIN_DIAGONAL))
-			return FORBIDDEN;
 		else if (is_five_white(0, i, MAIN_DIAGONAL))
 			return WHITEPIECE;
 	}
@@ -156,8 +146,6 @@ int game_win()
 	{
 		if (is_five_black(14, i, MAIN_DIAGONAL))
 			return BLACKPIECE;
-		else if (is_forbidden(14, i, MAIN_DIAGONAL))
-			return FORBIDDEN;
 		else if (is_five_white(14, i, MAIN_DIAGONAL))
 			return WHITEPIECE;
 	}
@@ -166,8 +154,6 @@ int game_win()
 	{
 		if (is_five_black(0, j, SUB_DIAGONAL))
 			return BLACKPIECE;
-		else if (is_forbidden(0, j, SUB_DIAGONAL))
-			return FORBIDDEN;
 		else if (is_five_white(0, j, SUB_DIAGONAL))
 			return WHITEPIECE;
 	}
@@ -175,27 +161,135 @@ int game_win()
 	{
 		if (is_five_black(14, j, SUB_DIAGONAL))
 			return BLACKPIECE;
-		else if (is_forbidden(14, j, SUB_DIAGONAL))
-			return FORBIDDEN;
 		else if (is_five_white(14, j, SUB_DIAGONAL))
 			return WHITEPIECE;
 	}
 	return 0;
 }
 
-
-int is_forbidden(int x, int y, int direction)
+int is_forbidden()
 {
-    int res = 0;
-    if (is_five_black(x, y, direction))
-        return 0;
-    if (num_active_three_black(x, y, direction) > 1)
-        res++;
-    if (num_dead_four_black(x, y, direction) + num_active_four_black(x, y, direction) > 1)
-        res++;
-    if (num_overline(x, y, direction))
-        res++;
-    if (res > 0)
-        return 1;
-    return 0;
+	for (int x = 0; x < SIZE; x++)
+		for (int y = 0; y < SIZE; y++)
+			if (record_board[x][y] == BLACKPIECE || record_board[x][y] == BLACKTRIANGLE)
+			{
+				int active_three = 0;
+				int dead_four = 0;
+				int active_four = 0;
+				int overline = 0;
+				
+				for (int direction = 1; direction <= 4; direction++)
+				{
+					if (is_five_black(x, y, direction))
+						return 0;
+					if (num_active_three_black(x, y, direction) > 1)
+						active_three++;
+					if (num_dead_four_black(x, y, direction) + num_active_four_black(x, y, direction) > 1)
+						active_four++;
+					if (num_overline(x, y, direction))
+						overline++;
+				}
+
+				if (active_three > 1)
+					return 1;
+				if (dead_four + active_four > 1)
+					return 1;
+				if (overline)
+					return 1;
+			}
+	return 0;
+}
+
+void person_vs_person()
+{
+	while (1)
+	{
+		if (latest_x != -1 && latest_y != -1)
+			record_board[latest_x][latest_y] = WHITEPIECE;
+		drop_pieces(BLACKPIECE);
+		record_to_display_array();
+		display_board();
+		if (game_win() == FORBIDDEN)
+		{
+			printf("黑棋触犯禁手，白棋胜利！\n");
+			break;
+		}
+		else if (game_win() == BLACKPIECE)
+		{
+			printf("黑棋胜利！\n");
+			break;
+		}
+
+		record_board[latest_x][latest_y] = BLACKPIECE;
+		drop_pieces(WHITEPIECE);
+		record_to_display_array();
+		display_board();
+		if (game_win() == BLACKPIECE)
+		{
+			printf("黑棋胜利！\n");
+			break;
+		}
+	}
+}
+void person_vs_computer()
+{
+	printf("请输入玩家选择哪一方(黑棋(B/b) 白棋(W/w)):\n");
+	char mode;
+	scanf("%c\n", &mode);
+	if (toupper(mode) == 'B')
+	{
+		while(1)
+		{
+			if (latest_x != -1 && latest_y != -1)
+				record_board[latest_x][latest_y] = WHITEPIECE;
+			drop_pieces(BLACKPIECE);
+			record_to_display_array();
+			display_board();
+			if (game_win() == FORBIDDEN)
+				printf("黑棋触犯禁手，白棋胜利！\n");
+			else if (game_win() == BLACKPIECE)
+			{
+				printf("黑棋胜利！\n");
+				break;
+			}
+			negative_max(BLACKPIECE, DEPTH, -99999999, 99999999);
+			record_board[next_point_x][next_point_y] = WHITETRIANGLE;
+			record_board[latest_x][latest_y] = BLACKPIECE;
+			latest_x = next_point_x, latest_y = next_point_y;
+			record_to_display_array();
+			display_board();
+			if (game_win() == WHITEPIECE)
+			{
+				printf("白棋胜利!\n");
+				break;
+			}
+		}
+	}
+	else if (toupper(mode) == 'W')
+	{
+		while(1)
+		{
+			if (latest_x != -1 && latest_y != -1)
+				record_board[latest_x][latest_y] = BLACKPIECE;
+			drop_pieces(WHITEPIECE);
+			record_to_display_array();
+			display_board();
+			if (game_win() == WHITEPIECE)
+			{
+				printf("白棋胜利！\n");
+				break;
+			}
+			negative_max(WHITEPIECE, DEPTH, -99999999, 99999999);
+			record_board[next_point_x][next_point_y] = BLACKTRIANGLE;
+			record_board[latest_x][latest_y] = WHITEPIECE;
+			latest_x = next_point_x, latest_y = next_point_y;
+			record_to_display_array();
+			display_board();
+			if (game_win() == BLACKPIECE)
+			{
+				printf("黑棋胜利!\n");
+				break;
+			}
+		}
+	}
 }
