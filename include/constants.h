@@ -3,8 +3,10 @@
 
 #include <stddef.h>
 #include <locale.h>
+
 #define SIZE 15
-#define DEPTH 3
+#define DEPTH 1
+
 enum PIECES{
     EMPTY = 0,
     BLACKPIECE = 1,
@@ -20,7 +22,7 @@ enum DIRECTIONS{
     SUB_DIAGONAL
 };
 
-enum CHESS_TYPE{
+enum CHESS_TYPE_MARKS{
     DEAD_TWO = 50,
     ACTIVE_TWO = 250,
     DEAD_THREE = 250,
