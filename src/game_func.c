@@ -182,7 +182,7 @@ int is_forbidden()
 				{
 					if (is_five_black(x, y, direction))
 						return 0;
-					if (num_active_three_black(x, y, direction) > 1)
+					if (num_active_three_black(x, y, direction))
 						active_three++;
 					if (num_dead_four_black(x, y, direction) + num_active_four_black(x, y, direction) > 1)
 						active_four++;
@@ -235,7 +235,8 @@ void person_vs_computer()
 {
 	printf("请输入玩家选择哪一方(黑棋(B/b) 白棋(W/w)):\n");
 	char mode;
-	scanf("%c\n", &mode);
+	scanf("%c", &mode);
+	getchar();
 	if (toupper(mode) == 'B')
 	{
 		while(1)
@@ -267,6 +268,9 @@ void person_vs_computer()
 	}
 	else if (toupper(mode) == 'W')
 	{
+		record_board[7][7] = BLACKPIECE;
+		record_to_display_array();
+		display_board(); 
 		while(1)
 		{
 			if (latest_x != -1 && latest_y != -1)
