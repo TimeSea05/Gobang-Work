@@ -190,7 +190,6 @@ int num_dead_two_black(int x, int y, int direction)
 
     res += str_match_side(e_dead_two_B_4, str);
 
-    res -= num_dead_three_black(x, y, direction);
     return res;
 }
 int num_dead_two_white(int x, int y, int direction)
@@ -213,7 +212,6 @@ int num_dead_two_white(int x, int y, int direction)
     res -= str_match(s_dead_two_W_2, str);
 
     res += str_match_side(e_dead_two_W_4, str);
-    res -= num_dead_three_white(x, y, direction);
 
     return res;
 }
@@ -222,12 +220,8 @@ int num_active_two_black(int x, int y, int direction)
     int res = 0;
     char str[16];
     to_string(str, x, y, direction);
-
     res += str_match(active_two_B_1, str);
     res += str_match(active_two_B_2, str);
-
-    res -= num_active_three_black(x, y, direction);
-    res -= num_dead_four_black(x, y, direction);
     return res;
 }
 int num_active_two_white(int x, int y, int direction)
@@ -237,9 +231,6 @@ int num_active_two_white(int x, int y, int direction)
     to_string(str, x, y, direction);
     res += str_match(active_two_W_1, str);
     res += str_match(active_two_W_2, str);
-    
-    res -= num_active_three_white(x, y, direction);
-    res -= num_dead_four_white(x, y, direction);
     return res;
 }
 int num_dead_three_black(int x, int y, int direction)
