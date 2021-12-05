@@ -3,9 +3,10 @@
 
 #include <stddef.h>
 #include <locale.h>
+#include <limits.h>
 
 #define SIZE 15
-#define DEPTH 1
+#define DEPTH 2
 
 enum PIECES{
     EMPTY = 0,
@@ -24,11 +25,11 @@ enum DIRECTIONS{
 
 enum CHESS_TYPE_MARKS{
     DEAD_TWO = 50,
-    ACTIVE_TWO = 250,
-    DEAD_THREE = 250,
-    ACTIVE_THREE = 2000,
-    DEAD_FOUR = 2000,
-    ACTIVE_FOUR = 10000,
+    ACTIVE_TWO = 2500,
+    DEAD_THREE = 4500,
+    ACTIVE_THREE = 20000,
+    DEAD_FOUR = 200000,
+    ACTIVE_FOUR = 99999999,
     FIVE = 99999999,
     FORBIDDEN = -99999999
 };
