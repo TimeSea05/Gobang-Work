@@ -11,12 +11,13 @@ int calculate_mark(int type);
 int has_neighbor(int x, int y);
 
 /**
- * @brief 负值极大算法 主要采用极大极小值算法与alpha-beta剪枝算法
- * @param type 棋子的种类
+ * @brief 搜索算法 主要采用极大极小值算法与alpha-beta剪枝算法
  * @param depth 搜索的深度 只能为奇数
+ * @param is_ai 判断是否为AI决策
  * @param alpha 搜索上界
  * @param beta  搜索下界
+ * @param type 棋子的种类
  **/
-int negative_max(int type, int depth, int alpha, int beta);
+int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type);
 
 #endif
