@@ -4,7 +4,7 @@
 
 作者水平有限，如有未能解决的bug或者您有更好的改进方法，请联系`anwentao1@gmail.com`
 
-## 1. 编译环境
+## 1. 开发环境
 
 本程序使用VSCode for Linux开发。
 
