@@ -12,19 +12,19 @@
  * -SUB_DIAGONAL 4 次对角线
  **/
 
-// 把点(x, y)处的棋局转化为字符串并返回
+// 把点(x, y)处的棋局转化为字符串
 void to_string(char str[], int x, int y, int direction);
 
-// 把点(x, y)处的水平方向(横向)棋局转化为字符串并返回
+// 把点(x, y)处的水平方向(横向)棋局转化为字符串
 void to_string_horizontal(char string_h[], int x, int y);
 
-// 把点(x, y)处的竖直方向(纵向)棋局转化为字符串并返回
+// 把点(x, y)处的竖直方向(纵向)棋局转化为字符串
 void to_string_vertical(char string_v[], int x, int y);
 
-// 把点(x, y)处的主对角线方向棋局转化为字符串并返回
+// 把点(x, y)处的主对角线方向棋局转化为字符串
 void to_string_main_diagonal(char string_md[], int x, int y);
 
-// 把点(x, y)处的次对角线方向棋局转化为字符串并返回
+// 把点(x, y)处的次对角线方向棋局转化为字符串
 void to_string_sub_diagonal(char string_sd[], int x, int y);
 /****************************************/
 
