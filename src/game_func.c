@@ -220,7 +220,7 @@ void person_vs_person()
 			printf("黑棋胜利！\n");
 			break;
 		}
-
+		
 		record_board[latest_x][latest_y] = BLACKPIECE;
 		drop_pieces(WHITEPIECE);
 		record_to_display_array();
@@ -248,13 +248,16 @@ void person_vs_computer()
 			record_to_display_array();
 			display_board();
 			if (game_win() == FORBIDDEN)
+			{
 				printf("黑棋触犯禁手，白棋胜利！\n");
+				break;
+			}
 			else if (game_win() == BLACKPIECE)
 			{
 				printf("黑棋胜利！\n");
 				break;
 			}
-			alpha_beta_prune(DEPTH, 1, -INT_MAX, INT_MAX, WHITEPIECE);
+			alpha_beta_prune(DEPTH, 1, -INT_MAX, INT_MAX, WHITEPIECE, 1);
 			record_board[next_point_x][next_point_y] = WHITETRIANGLE;
 			record_board[latest_x][latest_y] = BLACKPIECE;
 			latest_x = next_point_x, latest_y = next_point_y;
@@ -284,7 +287,7 @@ void person_vs_computer()
 				printf("白棋胜利！\n");
 				break;
 			}
-			alpha_beta_prune(DEPTH, 1, -INT_MAX, INT_MAX, BLACKPIECE);
+			alpha_beta_prune(DEPTH, 1, -INT_MAX, INT_MAX, BLACKPIECE, 0.2);
 			record_board[next_point_x][next_point_y] = BLACKTRIANGLE;
 			record_board[latest_x][latest_y] = WHITEPIECE;
 			latest_x = next_point_x, latest_y = next_point_y;
