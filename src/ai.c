@@ -39,7 +39,7 @@ extern int next_point_x, next_point_y;
     mark_w += num_active_four_white(pos_1, pos_2, DIRECTION) * ACTIVE_FOUR;\
     mark_w += is_five_white(pos_1, pos_2, DIRECTION) * FIVE;
 
-int calculate_mark(int type)
+int calculate_mark(int type, double ratio)
 {
     int mark_b = 0, mark_w = 0;
 
@@ -105,8 +105,8 @@ int calculate_mark(int type)
     }
     
     if (type == BLACKPIECE)
-        return mark_b - 0.2 * mark_w;
-    return mark_w - 0.2 * mark_b;
+        return mark_b - ratio * mark_w;
+    return mark_w - ratio * mark_b;
 }
 
 
@@ -149,7 +149,7 @@ int trans_type(int type)
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (para_1), latest_y = latest_y + (para_2); \
         record_board[latest_x][latest_y] = type; \
-        int val = alpha_beta_prune(depth - 1, !is_ai, alpha, beta, trans_type(type)); \
+        int val = alpha_beta_prune(depth - 1, !is_ai, alpha, beta, trans_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val > alpha) \
         { \
@@ -172,7 +172,7 @@ int trans_type(int type)
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (para_1), latest_y = latest_y + (para_2); \
         record_board[latest_x][latest_y] = type; \
-        int val = alpha_beta_prune(depth - 1, !is_ai, alpha, beta, trans_type(type)); \
+        int val = alpha_beta_prune(depth - 1, !is_ai, alpha, beta, trans_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val < beta) \
         { \
@@ -184,10 +184,10 @@ int trans_type(int type)
     }
 
 
-int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type)
+int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type, double ratio)
 {
     if (depth == 0)
-        return calculate_mark(type);
+        return calculate_mark(type, ratio);
     if (is_ai)
     {
         /**

@@ -3,7 +3,7 @@
 
 // 计分函数
 // @param type 棋子的种类
-int calculate_mark(int type);
+int calculate_mark(int type, double ratio);
 
 // 判断指定位置周围有无棋子
 // @param x x坐标 
@@ -18,6 +18,6 @@ int has_neighbor(int x, int y);
  * @param beta  搜索下界
  * @param type 棋子的种类
  **/
-int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type);
+int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type, double ratio);
 
 #endif
