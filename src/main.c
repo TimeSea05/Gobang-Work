@@ -12,7 +12,9 @@ extern int record_board[SIZE][SIZE];
 
 int main()
 {
+    // 使程序能够正常输出宽字符
     setlocale(LC_ALL, "");
+
     init_record_board();
     record_to_display_array();
     display_board();
@@ -24,12 +26,12 @@ int main()
         int mode;
         scanf("%d", &mode);
         getchar();
-        if (mode == 1)
+        if (mode == 1)  // 人人对战
         {
             person_vs_person();
             break;
         }
-        else if (mode == 2)
+        else if (mode == 2) // 人机对战
         {
             person_vs_computer();
             break;

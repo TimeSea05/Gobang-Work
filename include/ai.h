@@ -17,7 +17,8 @@ int has_neighbor(int x, int y);
  * @param alpha 搜索上界
  * @param beta  搜索下界
  * @param type 棋子的种类
+ * @param ratio 防守率  值越大，防守越强
  **/
-int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type, double ratio);
+int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double ratio);
 
 #endif

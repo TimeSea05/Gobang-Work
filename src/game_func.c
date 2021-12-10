@@ -82,6 +82,7 @@ void drop_pieces(int type)
 		char command_y;
 		scanf("%c%d", &command_y, &command_x);
 
+		// 将输入转化为程序内部的坐标值
 		// x & y coordination
 		int coordinate_x = -command_x + SIZE;
 		int coordinate_y;
@@ -92,6 +93,7 @@ void drop_pieces(int type)
 		else
 			coordinate_y = command_y - 'a';
 		
+		// 只有指定位置为空时才允许落子
 		if (record_board[coordinate_x][coordinate_y] == 0)
 		{
 			// no pieces in this position
@@ -170,10 +172,12 @@ int game_win()
 
 int is_forbidden()
 {
+	// 扫描整个棋盘，只对黑色棋子位置进行判定
 	for (int x = 0; x < SIZE; x++)
 		for (int y = 0; y < SIZE; y++)
 			if (record_board[x][y] == BLACKPIECE || record_board[x][y] == BLACKTRIANGLE)
 			{
+				// 各种可能触犯禁手的棋型的总数
 				int active_three = 0;
 				int dead_four = 0;
 				int active_four = 0;
@@ -181,6 +185,7 @@ int is_forbidden()
 				
 				for (int direction = 1; direction <= 4; direction++)
 				{
+					// 只要形成五连禁手就会失效
 					if (is_five_black(x, y, direction))
 						return 0;
 					if (num_active_three_black(x, y, direction))
@@ -190,11 +195,13 @@ int is_forbidden()
 					if (num_overline(x, y, direction))
 						overline++;
 				}
-
+				// 双活三
 				if (active_three > 1)
 					return 1;
+				// 双四
 				if (dead_four + active_four > 1)
 					return 1;
+				// 长连
 				if (overline)
 					return 1;
 			}
@@ -205,11 +212,13 @@ void person_vs_person()
 {
 	while (1)
 	{
+		// 首先黑棋落子
 		if (latest_x != -1 && latest_y != -1)
 			record_board[latest_x][latest_y] = WHITEPIECE;
 		drop_pieces(BLACKPIECE);
 		record_to_display_array();
 		display_board();
+
 		if (game_win() == FORBIDDEN)
 		{
 			printf("黑棋触犯禁手，白棋胜利！\n");
@@ -220,8 +229,9 @@ void person_vs_person()
 			printf("黑棋胜利！\n");
 			break;
 		}
-		
 		record_board[latest_x][latest_y] = BLACKPIECE;
+
+		// 此后白棋落子
 		drop_pieces(WHITEPIECE);
 		record_to_display_array();
 		display_board();
@@ -242,6 +252,7 @@ void person_vs_computer()
 	{
 		while(1)
 		{
+			// 玩家落子
 			if (latest_x != -1 && latest_y != -1)
 				record_board[latest_x][latest_y] = WHITEPIECE;
 			drop_pieces(BLACKPIECE);
@@ -257,7 +268,9 @@ void person_vs_computer()
 				printf("黑棋胜利！\n");
 				break;
 			}
-			alpha_beta_prune(DEPTH, 1, -INT_MAX, INT_MAX, WHITEPIECE, 1);
+
+			// AI落子
+			min_max_search(DEPTH, 1, -INT_MAX, INT_MAX, WHITEPIECE, 1);
 			record_board[next_point_x][next_point_y] = WHITETRIANGLE;
 			record_board[latest_x][latest_y] = BLACKPIECE;
 			latest_x = next_point_x, latest_y = next_point_y;
@@ -272,11 +285,14 @@ void person_vs_computer()
 	}
 	else if (toupper(mode) == 'W')
 	{
+		// 黑棋首先在棋盘中央落子
 		record_board[7][7] = BLACKPIECE;
 		record_to_display_array();
 		display_board(); 
+
 		while(1)
 		{
+			// 玩家落子
 			if (latest_x != -1 && latest_y != -1)
 				record_board[latest_x][latest_y] = BLACKPIECE;
 			drop_pieces(WHITEPIECE);
@@ -287,7 +303,9 @@ void person_vs_computer()
 				printf("白棋胜利！\n");
 				break;
 			}
-			alpha_beta_prune(DEPTH, 1, -INT_MAX, INT_MAX, BLACKPIECE, 0.2);
+
+			// AI落子
+			min_max_search(DEPTH, 1, -INT_MAX, INT_MAX, BLACKPIECE, 0.2);
 			record_board[next_point_x][next_point_y] = BLACKTRIANGLE;
 			record_board[latest_x][latest_y] = WHITEPIECE;
 			latest_x = next_point_x, latest_y = next_point_y;

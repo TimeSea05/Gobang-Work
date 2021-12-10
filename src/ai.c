@@ -20,24 +20,24 @@ extern int next_point_x, next_point_y;
     latest_x - i >= 0 || latest_x + i < SIZE || latest_y - i >= 0 || latest_y + i < SIZE
 
 // 计算黑棋得分
-#define ADD_MARK_BLACK(pos_1, pos_2, DIRECTION) \
-    mark_b += num_dead_two_black(pos_1, pos_2, DIRECTION) * DEAD_TWO;\
-    mark_b += num_active_two_black(pos_1, pos_2, DIRECTION) * ACTIVE_TWO;\
-    mark_b += num_dead_three_black(pos_1, pos_2, DIRECTION) * DEAD_THREE;\
-    mark_b += num_active_three_black(pos_1, pos_2, DIRECTION) * ACTIVE_THREE; \
-    mark_b += num_dead_four_black(pos_1, pos_2, DIRECTION) * DEAD_FOUR;\
-    mark_b += num_active_four_black(pos_1, pos_2, DIRECTION) * ACTIVE_FOUR;\
-    mark_b += is_five_black(pos_1, pos_2, DIRECTION) * FIVE;
+#define ADD_MARK_BLACK(pos_x, pos_y, direction) \
+    mark_b += num_dead_two_black(pos_x, pos_y, direction) * DEAD_TWO;\
+    mark_b += num_active_two_black(pos_x, pos_y, direction) * ACTIVE_TWO;\
+    mark_b += num_dead_three_black(pos_x, pos_y, direction) * DEAD_THREE;\
+    mark_b += num_active_three_black(pos_x, pos_y, direction) * ACTIVE_THREE; \
+    mark_b += num_dead_four_black(pos_x, pos_y, direction) * DEAD_FOUR;\
+    mark_b += num_active_four_black(pos_x, pos_y, direction) * ACTIVE_FOUR;\
+    mark_b += is_five_black(pos_x, pos_y, direction) * FIVE;
 
 // 计算白棋得分
-#define ADD_MARK_WHITE(pos_1, pos_2, DIRECTION) \
-    mark_w += num_dead_two_white(pos_1, pos_2, DIRECTION) * DEAD_TWO;\
-    mark_w += num_active_two_white(pos_1, pos_2, DIRECTION) * ACTIVE_TWO;\
-    mark_w += num_dead_three_white(pos_1, pos_2, DIRECTION) * DEAD_THREE;\
-    mark_w += num_active_three_white(pos_1, pos_2, DIRECTION) * ACTIVE_THREE;\
-    mark_w += num_dead_four_white(pos_1, pos_2, DIRECTION) * DEAD_FOUR;\
-    mark_w += num_active_four_white(pos_1, pos_2, DIRECTION) * ACTIVE_FOUR;\
-    mark_w += is_five_white(pos_1, pos_2, DIRECTION) * FIVE;
+#define ADD_MARK_WHITE(pos_x, pos_y, direction) \
+    mark_w += num_dead_two_white(pos_x, pos_y, direction) * DEAD_TWO;\
+    mark_w += num_active_two_white(pos_x, pos_y, direction) * ACTIVE_TWO;\
+    mark_w += num_dead_three_white(pos_x, pos_y, direction) * DEAD_THREE;\
+    mark_w += num_active_three_white(pos_x, pos_y, direction) * ACTIVE_THREE;\
+    mark_w += num_dead_four_white(pos_x, pos_y, direction) * DEAD_FOUR;\
+    mark_w += num_active_four_white(pos_x, pos_y, direction) * ACTIVE_FOUR;\
+    mark_w += is_five_white(pos_x, pos_y, direction) * FIVE;
 
 int calculate_mark(int type, double ratio)
 {
@@ -112,11 +112,14 @@ int calculate_mark(int type, double ratio)
 
 int has_neighbor(int x, int y)
 {
+    // 上下左右 左上右上左下右下 共8个方向
     for (int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++)
         {
+            // 排除棋子自己的位置
             if (i == 0 && j == 0)
                 continue;
+            // 忽略越界情况
             if (x + i < 0 || x + i >= SIZE || y + j < 0 || y + j >= SIZE)
                 continue;
             if (!record_board[x + i][y + j] == EMPTY)
@@ -127,7 +130,7 @@ int has_neighbor(int x, int y)
 
 // 改变棋子类型
 // type: BLACKPIECE or WHITEPIECE
-int trans_type(int type)
+int change_type(int type)
 {
     if (type == BLACKPIECE)
         return WHITEPIECE;
@@ -137,19 +140,19 @@ int trans_type(int type)
 /**
  * 机器智能进行搜索
  * 对棋盘上某点进行评估的前提：此处为空且此处周围有棋子(使用has_neighbor函数进行判定)
- * para_1, para_2是搜索的顺序参数，在alpha_beta_prune处会有较为详细的解释
+ * pos_x, pos_y是搜索的位置，在min_max_search处会有较为详细的解释
  * 因为我们是测试，所以我们要存储最后一次落子的位置，在测试完成后，再进行还原，这样模拟了下面的过程
  * 即落子之后又把子拿走
  * 在进行递归后，进行alpha-beta剪枝，如果需要剪枝，那么直接跳出搜索(goto finish_ai)
  **/
-#define SEARCH_AI(para_1, para_2) \
-    if (record_board[latest_x + (para_1)][latest_y + (para_2)] == EMPTY \
-        && has_neighbor(latest_x + (para_1), latest_y + (para_2))) \
+#define SEARCH_AI(pos_x, pos_y) \
+    if (record_board[latest_x + (pos_x)][latest_y + (pos_y)] == EMPTY \
+        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y))) \
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
-        latest_x = latest_x + (para_1), latest_y = latest_y + (para_2); \
+        latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
         record_board[latest_x][latest_y] = type; \
-        int val = alpha_beta_prune(depth - 1, !is_ai, alpha, beta, trans_type(type), ratio); \
+        int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val > alpha) \
         { \
@@ -165,14 +168,14 @@ int trans_type(int type)
  * 机器对对手的落子可能进行搜索
  * 思路与上面的宏函数基本相同
  **/
-#define SEARCH_NOT_AI(para_1, para_2) \
-    if (record_board[latest_x + (para_1)][latest_y + (para_2)] == EMPTY \
-        && has_neighbor(latest_x + (para_1), latest_y + (para_2))) \
+#define SEARCH_NOT_AI(pos_x, pos_y) \
+    if (record_board[latest_x + (pos_x)][latest_y + (pos_y)] == EMPTY \
+        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y))) \
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
-        latest_x = latest_x + (para_1), latest_y = latest_y + (para_2); \
+        latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
         record_board[latest_x][latest_y] = type; \
-        int val = alpha_beta_prune(depth - 1, !is_ai, alpha, beta, trans_type(type), ratio); \
+        int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val < beta) \
         { \
@@ -184,7 +187,7 @@ int trans_type(int type)
     }
 
 
-int alpha_beta_prune(int depth, int is_ai, int alpha, int beta, int type, double ratio)
+int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double ratio)
 {
     if (depth == 0)
         return calculate_mark(type, ratio);
