@@ -34,4 +34,8 @@ enum CHESS_TYPE_MARKS{
     FORBIDDEN = -INT_MAX / 2
 };
 
+enum GAME_MODE{
+    PERSON_VS_PERSON = 1,
+    PERSON_VS_COMPUTER = 2
+};
 #endif 
