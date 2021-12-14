@@ -23,15 +23,15 @@ int main()
     {
         printf("请选择游戏模式：\n");
         printf("人人对战请输入1; 人机对战请输入2;\n");
-        int mode;
-        scanf("%d", &mode);
+        int game_mode;
+        scanf("%d", &game_mode);
         getchar();
-        if (mode == 1)  // 人人对战
+        if (game_mode == PERSON_VS_PERSON)  // 人人对战
         {
             person_vs_person();
             break;
         }
-        else if (mode == 2) // 人机对战
+        else if (game_mode == PERSON_VS_COMPUTER) // 人机对战
         {
             person_vs_computer();
             break;

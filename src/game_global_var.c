@@ -29,8 +29,10 @@ int record_board[SIZE][SIZE];
 // 最后放置棋子的位置
 int latest_x = -1, latest_y = -1;
 
-// 最后放置棋子的类型
-int latest_type = -1;
-
 // AI将要放置棋子的位置
 int next_point_x = 0, next_point_y = 0;
+
+// 记录下棋顺序的数组
+int pos_x_arr[SIZE * SIZE], pos_y_arr[SIZE * SIZE];
+// 指向最后一次落子位置的指针
+int p_pos_arr = -1;

@@ -10,9 +10,16 @@ void record_to_display_array();
 // 打印字符数组display_board
 void display_board();
 
-// 落子
-// @param: type BLACKPIECE: 黑子  WHITEPIECE 白子
-void drop_pieces(int type);
+/** 
+ * @brief 落子
+ * @param type BLACKPIECE: 黑子  WHITEPIECE 白子
+ * @param game_mode 游戏模式(人人或者人机)
+ * @return 0为正常落子, 1为悔棋
+ **/
+int drop_pieces(int type, int game_mode);
+
+// 悔棋
+void regret(int game_mode);
 
 // 判断是否有一方已经胜出
 int game_win();

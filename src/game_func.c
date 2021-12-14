@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "game_func.h"
 #include "game.h"
@@ -12,8 +13,9 @@ extern wchar_t init_display_board_array[SIZE][SIZE + 1];
 extern wchar_t display_board_array[SIZE][SIZE + 1];
 extern int record_board[SIZE][SIZE];
 extern int latest_x, latest_y;
-extern int latest_type;
 extern int next_point_x, next_point_y;
+extern int pos_x_arr[SIZE * SIZE], pos_y_arr[SIZE * SIZE];
+extern int p_pos_arr;
 
 // 黑色棋子
 wchar_t play1_pic = L'●'; 
@@ -73,47 +75,82 @@ void display_board()
 	printf("\n\n");
 }
 
-void drop_pieces(int type)
+int drop_pieces(int type, int game_mode)
 {
 	printf("请输入你要下的棋子的坐标(e.g. H1 or h1):\n");
 	while (1)
 	{
-		int command_x;
-		char command_y;
-		scanf("%c%d", &command_y, &command_x);
-
-		// 将输入转化为程序内部的坐标值
-		// x & y coordination
-		int coordinate_x = -command_x + SIZE;
-		int coordinate_y;
-		// uppercase letters
-		if (isupper(command_y))
-			coordinate_y = command_y - 'A';
-		// lowercase letters
-		else
-			coordinate_y = command_y - 'a';
-		
-		// 只有指定位置为空时才允许落子
-		if (record_board[coordinate_x][coordinate_y] == 0)
+		char command[7];
+		scanf("%s", command);
+		if (!strcmp(command, "regret"))
 		{
-			// no pieces in this position
-			if (type == BLACKPIECE)
-				record_board[coordinate_x][coordinate_y] = BLACKTRIANGLE;
-			else if (type == WHITEPIECE)
-				record_board[coordinate_x][coordinate_y] = WHITETRIANGLE;
-			latest_x = coordinate_x;
-			latest_y = coordinate_y;
-			latest_type = type;
-			getchar();
-			break;
+			regret(game_mode);
+			return 1;
 		}
 		else
 		{
-			printf("There is already a piece in this position. Enter again!\n");
-			getchar();
-			continue;
+			// 将输入转化为程序内部的坐标值
+			int val_x = command[1] - '0';
+			if (command[2] != '\0')
+				val_x = val_x * 10 + command[2] - '0';
+			int coordinate_x = -val_x + SIZE;
+			int coordinate_y;
+			if (isupper(command[0]))
+				coordinate_y = command[0] - 'A';
+			else
+				coordinate_y = command[0]- 'a';
+			if (coordinate_x >= SIZE || coordinate_x < 0 || coordinate_y >= SIZE || coordinate_y < 0)
+			{
+				printf("位置越界！请重新输入：\n");
+				continue;
+			}
+
+			// 只有指定位置为空时才允许落子
+			if (record_board[coordinate_x][coordinate_y] == EMPTY)
+			{
+				if (type == BLACKPIECE)
+					record_board[coordinate_x][coordinate_y] = BLACKTRIANGLE;
+				else if (type == WHITEPIECE)
+					record_board[coordinate_x][coordinate_y] = WHITETRIANGLE;
+				latest_x = coordinate_x, latest_y = coordinate_y;
+				p_pos_arr++;
+				pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y;
+				getchar();
+				break;
+			}
+			else
+			{
+				printf("这里已经有棋子了！请重新输入：\n");
+				getchar();
+				continue;
+			}
 		}
 	}
+	return 0;
+}
+
+void regret(int game_mode)
+{
+	if (game_mode == PERSON_VS_PERSON)
+	{
+		record_board[pos_x_arr[p_pos_arr]][pos_y_arr[p_pos_arr]] = EMPTY;
+		p_pos_arr--;
+		latest_x = pos_x_arr[p_pos_arr], latest_y = pos_y_arr[p_pos_arr];
+	}
+	else if (game_mode == PERSON_VS_COMPUTER)
+	{
+		// 需要拿掉人的棋子和机器下的棋子
+		record_board[pos_x_arr[p_pos_arr]][pos_y_arr[p_pos_arr]] = EMPTY;
+		p_pos_arr--;
+		record_board[pos_x_arr[p_pos_arr]][pos_y_arr[p_pos_arr]] = EMPTY;
+		p_pos_arr--;
+		latest_x = pos_x_arr[p_pos_arr], latest_y = pos_y_arr[p_pos_arr];
+	}
+	// 将最后一步的棋子变成三角形
+	if (record_board[latest_x][latest_y] == BLACKPIECE)
+		record_board[latest_x][latest_y] = BLACKTRIANGLE;
+	else if (record_board[latest_x][latest_y] == WHITEPIECE)
+		record_board[latest_x][latest_y] = WHITETRIANGLE;
 }
 
 int game_win()
@@ -190,7 +227,9 @@ int is_forbidden()
 						return 0;
 					if (num_active_three_black(x, y, direction))
 						active_three++;
-					if (num_dead_four_black(x, y, direction) + num_active_four_black(x, y, direction) > 1)
+					if (num_dead_four_black(x, y, direction))
+						dead_four++;
+					if (num_active_four_black(x, y, direction))
 						active_four++;
 					if (num_overline(x, y, direction))
 						overline++;
@@ -215,7 +254,7 @@ void person_vs_person()
 		// 首先黑棋落子
 		if (latest_x != -1 && latest_y != -1)
 			record_board[latest_x][latest_y] = WHITEPIECE;
-		drop_pieces(BLACKPIECE);
+		drop_pieces(BLACKPIECE, PERSON_VS_PERSON);
 		record_to_display_array();
 		display_board();
 
@@ -232,7 +271,7 @@ void person_vs_person()
 		record_board[latest_x][latest_y] = BLACKPIECE;
 
 		// 此后白棋落子
-		drop_pieces(WHITEPIECE);
+		drop_pieces(WHITEPIECE, PERSON_VS_PERSON);
 		record_to_display_array();
 		display_board();
 		if (game_win() == WHITEPIECE)
@@ -245,17 +284,22 @@ void person_vs_person()
 void person_vs_computer()
 {
 	printf("请输入玩家选择哪一方(黑棋(B/b) 白棋(W/w)):\n");
-	char mode;
-	scanf("%c", &mode);
+	char chess_color;
+	scanf("%c", &chess_color);
 	getchar();
-	if (toupper(mode) == 'B')
+	if (toupper(chess_color) == 'B')
 	{
 		while(1)
 		{
 			// 玩家落子
 			if (latest_x != -1 && latest_y != -1)
 				record_board[latest_x][latest_y] = WHITEPIECE;
-			drop_pieces(BLACKPIECE);
+			if (drop_pieces(BLACKPIECE, PERSON_VS_COMPUTER))
+			{
+				record_to_display_array();
+				display_board();
+				continue;
+			}
 			record_to_display_array();
 			display_board();
 			if (game_win() == FORBIDDEN)
@@ -274,8 +318,11 @@ void person_vs_computer()
 			record_board[next_point_x][next_point_y] = WHITETRIANGLE;
 			record_board[latest_x][latest_y] = BLACKPIECE;
 			latest_x = next_point_x, latest_y = next_point_y;
+			p_pos_arr++;
+			pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y;
 			record_to_display_array();
 			display_board();
+			printf("机器落子的位置为: %c%d\n", latest_y + 'A', SIZE - latest_x);
 			if (game_win() == WHITEPIECE)
 			{
 				printf("白棋胜利!\n");
@@ -283,7 +330,7 @@ void person_vs_computer()
 			}
 		}
 	}
-	else if (toupper(mode) == 'W')
+	else if (toupper(chess_color) == 'W')
 	{
 		// 黑棋首先在棋盘中央落子
 		record_board[7][7] = BLACKPIECE;
@@ -295,7 +342,12 @@ void person_vs_computer()
 			// 玩家落子
 			if (latest_x != -1 && latest_y != -1)
 				record_board[latest_x][latest_y] = BLACKPIECE;
-			drop_pieces(WHITEPIECE);
+			if (drop_pieces(WHITEPIECE, PERSON_VS_COMPUTER))
+			{
+				record_to_display_array();
+				display_board();
+				continue;
+			}
 			record_to_display_array();
 			display_board();
 			if (game_win() == WHITEPIECE)
@@ -309,8 +361,11 @@ void person_vs_computer()
 			record_board[next_point_x][next_point_y] = BLACKTRIANGLE;
 			record_board[latest_x][latest_y] = WHITEPIECE;
 			latest_x = next_point_x, latest_y = next_point_y;
+			p_pos_arr++;
+			pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y;
 			record_to_display_array();
 			display_board();
+			printf("机器落子的位置为: %c%d\n", latest_y + 'A', SIZE - latest_x);
 			if (game_win() == BLACKPIECE)
 			{
 				printf("黑棋胜利!\n");
