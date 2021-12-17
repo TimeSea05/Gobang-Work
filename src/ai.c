@@ -8,6 +8,15 @@ extern int latest_x, latest_y;
 extern int record_board[SIZE][SIZE];
 extern int next_point_x, next_point_y;
 
+extern int leftest, rightest;
+extern int uppest, downest;
+extern int md_leftest_up, md_rightest_up, md_leftest_down, md_rightest_down;
+extern int sd_leftest_up, sd_rightest_up, sd_leftest_down, sd_rightest_down;
+
+extern int pos_x_arr[SIZE * SIZE], pos_y_arr[SIZE * SIZE];
+extern int p_pos_arr;
+extern int prune_times;
+
 /**
  * 在程序中多处使用宏函数来精简代码结构，导致代码的可读性降低
  * 如果想更好地理解每一个宏函数的意义，可借助你使用的IDE或者编辑器
@@ -43,66 +52,52 @@ int calculate_mark(int type, double ratio)
 {
     int mark_b = 0, mark_w = 0;
 
-    /*******************计算黑棋得分*******************/
+    /*******************计算黑棋与白棋得分*******************/
     // HORIZONTAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_BLACK(i, 0, HORIZONTAL);
-    }
+    if (uppest < SIZE && downest > -1)
+        for (int i = uppest; i <= downest; i++)
+        {
+            ADD_MARK_BLACK(i, 0, HORIZONTAL);
+            ADD_MARK_WHITE(i, 0, HORIZONTAL);
+        }
     // VERTICAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_BLACK(0, j, VERTICAL);
-    }
+    if (leftest < SIZE && rightest > -1)
+        for (int j = leftest; j <= rightest; j++)
+        {
+            ADD_MARK_BLACK(0, j, VERTICAL);
+            ADD_MARK_WHITE(0, j, VERTICAL);
+        }
     // MAIN DIAGONAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
-    }
-    for (int i = 0; i < SIZE - 1; i++)
-    {
-        ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
-    }
+    // 棋盘右上部分
+    if (md_leftest_up < SIZE && md_rightest_up > -1)
+        for (int i = md_leftest_up; i <= md_rightest_up; i++)
+        {
+            ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
+            ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
+        }
+    // 棋盘左下部分
+    if (md_leftest_down < SIZE && md_rightest_down > -1)
+        for (int i = md_leftest_down; i <= md_rightest_down; i++)
+        {
+            ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
+            ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
+        }
     // SUB DIAGONAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
-    }
-    for (int j = 0; j < SIZE - 1; j++)
-    {
-        ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
-    }
+    // 棋盘左上部分
+    if (sd_leftest_up < SIZE && sd_rightest_up > -1)
+        for (int j = sd_leftest_up; j <= sd_rightest_up; j++)
+        {
+            ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
+            ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
+        }
+    // 棋盘右下部分
+    if (sd_leftest_down < SIZE && sd_rightest_down > -1)
+        for (int j = sd_leftest_down; j <= sd_rightest_down; j++)
+        {
+            ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
+            ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
+        }
     mark_b += is_forbidden() * FORBIDDEN;
-    
-    /*******************计算白棋得分*******************/
-    // HORIZONTAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_WHITE(i, 0, HORIZONTAL);
-    }
-    // VERTICAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_WHITE(0, j, VERTICAL);
-    }
-    // MAINDIAGONAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
-    }
-    for (int i = 0; i < SIZE - 1; i++)
-    {
-        ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
-    }
-    // SUB DIAGONAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
-    }
-    for (int j = 1; j < SIZE; j++)
-    {
-        ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
-    }
     
     if (type == BLACKPIECE)
         return mark_b - ratio * mark_w;
@@ -112,7 +107,7 @@ int calculate_mark(int type, double ratio)
 
 int has_neighbor(int x, int y)
 {
-    // 上下左右 左上右上左下右下 共8个方向
+    // 上下左右 左上 右上 左下 右下 共8个方向
     for (int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++)
         {
@@ -151,9 +146,14 @@ int change_type(int type)
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
+        p_pos_arr++; \
+		pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y; \
         record_board[latest_x][latest_y] = type; \
+        update_border(); \
         int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
+        p_pos_arr--; \
+        reset_border(); \
         if (val > alpha) \
         { \
             alpha = val; \
@@ -174,8 +174,13 @@ int change_type(int type)
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
+        p_pos_arr++; \
+		pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y; \
         record_board[latest_x][latest_y] = type; \
+        update_border(); \
         int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
+        p_pos_arr--; \
+        reset_border(); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val < beta) \
         { \
@@ -214,7 +219,8 @@ int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double r
                 SEARCH_AI(i, j);
             }
         }
-        finish_ai: 
+        finish_ai:
+            prune_times++;
             return alpha;  
     }
     else
@@ -237,6 +243,7 @@ int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double r
             }
         }
         finish_not_ai:
+            prune_times++;
             return beta;
     }
 }
