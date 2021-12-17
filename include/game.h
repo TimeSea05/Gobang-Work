@@ -103,4 +103,7 @@ int is_five_black(int x, int y, int direction);
 // @return 若形成五连返回1,否则返回0
 int is_five_white(int x, int y, int direction);
 
+// 统计特殊禁手情形的数目
+int num_special_forbiddens(int x, int y, int direction);
+
 #endif

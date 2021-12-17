@@ -125,21 +125,20 @@ void str_reverse(char str[])
 }
 int str_match(char* str_s, char* str_l)
 {
-    int len_str_s = strlen(str_s), len_str_l = strlen(str_l);
-    if (len_str_s > len_str_l)
+    size_t len_str_s = strlen(str_s);
+    if (len_str_s > strlen(str_l))
         return 0;
 
     int res = 0;
-    int i, j;
-    for (i = 0; i <= len_str_l - len_str_s; i++)
+    while (strlen(str_l) >= len_str_s)
     {
-        for (j = 0; j < len_str_s; j++)
-            if (str_s[j] != str_l[i + j])
-                break;
-        if (j == len_str_s)
+        char* p_str = strstr(str_l, str_s);
+        if (p_str == NULL)
+            return res;
+        else
         {
-            i += (len_str_s - 1);
             res++;
+            str_l = p_str + len_str_s;
         }
     }
     return res;
@@ -444,5 +443,15 @@ int num_overline(int x, int y, int direction)
     char str[16];
     to_string(str, x, y, direction);
     res += str_match(five_forbidden, str);
+    return res;
+}
+int num_special_forbiddens(int x, int y, int direction)
+{
+    int res = 0;
+    char str[16];
+    to_string(str, x, y, direction);
+    res += str_match(forbidden_1, str);
+    res += str_match(forbidden_2, str);
+    res += str_match(forbidden_3, str);
     return res;
 }
