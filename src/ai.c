@@ -8,6 +8,15 @@ extern int latest_x, latest_y;
 extern int record_board[SIZE][SIZE];
 extern int next_point_x, next_point_y;
 
+extern int leftest, rightest;
+extern int uppest, downest;
+extern int md_leftest_up, md_rightest_up, md_leftest_down, md_rightest_down;
+extern int sd_leftest_up, sd_rightest_up, sd_leftest_down, sd_rightest_down;
+
+extern int pos_x_arr[SIZE * SIZE], pos_y_arr[SIZE * SIZE];
+extern int p_pos_arr;
+extern int prune_times;
+
 /**
  * 在程序中多处使用宏函数来精简代码结构，导致代码的可读性降低
  * 如果想更好地理解每一个宏函数的意义，可借助你使用的IDE或者编辑器
@@ -88,7 +97,7 @@ int calculate_mark(int type, double ratio)
 
 int has_neighbor(int x, int y)
 {
-    // 上下左右 左上右上左下右下 共8个方向
+    // 上下左右 左上 右上 左下 右下 共8个方向
     for (int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++)
         {
@@ -127,9 +136,14 @@ int change_type(int type)
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
+        p_pos_arr++; \
+		pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y; \
         record_board[latest_x][latest_y] = type; \
+        update_border(); \
         int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
+        p_pos_arr--; \
+        reset_border(); \
         if (val > alpha) \
         { \
             alpha = val; \
@@ -150,8 +164,13 @@ int change_type(int type)
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
+        p_pos_arr++; \
+		pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y; \
         record_board[latest_x][latest_y] = type; \
+        update_border(); \
         int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
+        p_pos_arr--; \
+        reset_border(); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val < beta) \
         { \
@@ -190,7 +209,8 @@ int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double r
                 SEARCH_AI(i, j);
             }
         }
-        finish_ai: 
+        finish_ai:
+            prune_times++;
             return alpha;  
     }
     else
@@ -213,6 +233,7 @@ int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double r
             }
         }
         finish_not_ai:
+            prune_times++;
             return beta;
     }
 }

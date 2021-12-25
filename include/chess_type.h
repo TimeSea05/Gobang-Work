@@ -88,4 +88,9 @@ char five_W[] = "77777";
 
 // 黑棋长连
 char five_forbidden[] = "111111";
+
+// 特殊禁手情形 在一条线上形成两个四
+char forbidden_1[] = "11011011";
+char forbidden_2[] = "1011101";
+char forbidden_3[] = "111010111";
 #endif

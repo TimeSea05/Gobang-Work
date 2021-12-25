@@ -24,6 +24,13 @@ void regret(int game_mode);
 // 判断是否有一方已经胜出
 int game_win();
 
+
+// 更新边界
+void update_border();
+
+// 重置边界
+void reset_border();
+
 // 检查禁手
 int is_forbidden();
 
