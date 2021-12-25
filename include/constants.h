@@ -6,7 +6,7 @@
 #include <limits.h>
 
 #define SIZE 15 // 棋盘大小
-#define DEPTH 2 // 极大-极小算法的搜索深度
+#define DEPTH 4 // 极大-极小算法的搜索深度
 
 enum PIECES{
     EMPTY = 0,
