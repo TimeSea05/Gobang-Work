@@ -43,7 +43,7 @@ int calculate_mark(int type, double ratio)
 {
     int mark_b = 0, mark_w = 0;
 
-    /*******************计算黑棋得分*******************/
+    /*******************计算黑棋和白棋得分*******************/
     // HORIZONTAL
     for (int i = 0; i < SIZE; i++)
     {
