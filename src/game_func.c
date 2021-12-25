@@ -220,7 +220,7 @@ void regret(int game_mode)
 
 int game_win()
 {
-	if (is_forbidden())
+	if (is_forbidden_global())
 		return FORBIDDEN;
 
 	// HORIZONTAL
@@ -272,7 +272,7 @@ int game_win()
 	return 0;
 }
 
-int is_forbidden()
+int is_forbidden_global()
 {
 	// 扫描整个棋盘，只对黑色棋子位置进行判定
 	for (int x = 0; x < SIZE; x++)
@@ -308,10 +308,64 @@ int is_forbidden()
 				// 双四
 				if (dead_four + active_four > 1)
 					return 1;
-				// 长连
+				// 长连或者特殊禁手
 				if (overline || special_forbidden)
 					return 1;
 			}
+	return 0;
+}
+
+int is_forbidden_point(int x, int y)
+{
+	if (record_board[x][y] != EMPTY)
+		return -1;
+	
+	// 各种可能触犯禁手的棋型的总数
+	int active_three = 0;
+	int dead_four = 0;
+	int active_four = 0;
+	int overline = 0;
+	int special_forbidden = 0;
+
+	record_board[x][y] = BLACKPIECE;			
+	for (int direction = 1; direction <= 4; direction++)
+	{
+		// 只要形成五连禁手就会失效
+		if (is_five_black(x, y, direction))
+		{
+			record_board[x][y] = EMPTY;
+			return 0;
+		}
+		if (num_active_three_black(x, y, direction))
+			active_three++;
+		if (num_dead_four_black(x, y, direction))
+			dead_four++;
+		if (num_active_four_black(x, y, direction))
+			active_four++;
+		if (num_overline(x, y, direction))
+			overline++;
+		if (num_special_forbiddens(x, y, direction))
+			special_forbidden++;
+	}
+	// 双活三
+	if (active_three > 1)
+	{
+		record_board[x][y] = EMPTY;
+		return 1;
+	}
+	// 双四
+	if (dead_four + active_four > 1)
+	{
+		record_board[x][y] = EMPTY;
+		return 1;
+	}
+	// 长连或者特殊禁手
+	if (overline || special_forbidden)
+	{
+		record_board[x][y] = EMPTY;
+		return 1;
+	}
+	record_board[x][y] = EMPTY;
 	return 0;
 }
 
@@ -325,7 +379,6 @@ void person_vs_person()
 		drop_pieces(BLACKPIECE, PERSON_VS_PERSON);
 		record_to_display_array();
 		display_board();
-
 		if (game_win() == FORBIDDEN)
 		{
 			printf("黑棋触犯禁手，白棋胜利! \n");
@@ -391,7 +444,7 @@ void person_vs_computer()
 			record_to_display_array();
 			display_board();
 			printf("机器落子的位置为: %c%d\n", latest_y + 'A', SIZE - latest_x);
-			printf("剪枝次数： %d\n", prune_times);
+			printf("剪枝次数: %d\n", prune_times);
 			prune_times = 0;
 			if (game_win() == WHITEPIECE)
 			{
@@ -436,7 +489,7 @@ void person_vs_computer()
 			record_to_display_array();
 			display_board();
 			printf("机器落子的位置为: %c%d\n", latest_y + 'A', SIZE - latest_x);
-			printf("剪枝次数： %d\n", prune_times);
+			printf("剪枝次数: %d\n", prune_times);
 			prune_times = 0;
 			if (game_win() == BLACKPIECE)
 			{

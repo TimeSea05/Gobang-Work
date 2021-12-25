@@ -31,8 +31,19 @@ void update_border();
 // 重置边界
 void reset_border();
 
-// 检查禁手
-int is_forbidden();
+/**
+ * 使用两种禁手的原因：
+ * 全局禁手是用来检验整个棋盘是否有禁手存在，只用来检验对手是否产生禁手
+ * 点禁手是用来在搜索时判定此点是否可以落子的
+ * 因为大多数触发禁手的情形都是黑子落下时，以刚落下的黑子为中心形成活三、四等情形
+ * 故使用点禁手可以处理大部分情况
+ **/
+
+// 检查全局禁手
+int is_forbidden_global();
+
+// 检查点禁手
+int is_forbidden_point(int x, int y);
 
 // 人人对战模式
 void person_vs_person();

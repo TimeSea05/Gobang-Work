@@ -52,42 +52,52 @@ int calculate_mark(int type, double ratio)
 {
     int mark_b = 0, mark_w = 0;
 
-    /*******************计算黑棋和白棋得分*******************/
+    /*******************计算黑棋与白棋得分*******************/
     // HORIZONTAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_BLACK(i, 0, HORIZONTAL);
-        ADD_MARK_WHITE(i, 0, HORIZONTAL);
-    }
+    if (uppest < SIZE && downest > -1)
+        for (int i = uppest; i <= downest; i++)
+        {
+            ADD_MARK_BLACK(i, 0, HORIZONTAL);
+            ADD_MARK_WHITE(i, 0, HORIZONTAL);
+        }
     // VERTICAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_BLACK(0, j, VERTICAL);
-        ADD_MARK_WHITE(0, j, VERTICAL);
-    }
+    if (leftest < SIZE && rightest > -1)
+        for (int j = leftest; j <= rightest; j++)
+        {
+            ADD_MARK_BLACK(0, j, VERTICAL);
+            ADD_MARK_WHITE(0, j, VERTICAL);
+        }
     // MAIN DIAGONAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
-        ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
-    }
-    for (int i = 0; i < SIZE - 1; i++)
-    {
-        ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
-        ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
-    }
+    // 棋盘右上部分
+    if (md_leftest_up < SIZE && md_rightest_up > -1)
+        for (int i = md_leftest_up; i <= md_rightest_up; i++)
+        {
+            ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
+            ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
+        }
+    // 棋盘左下部分
+    if (md_leftest_down < SIZE && md_rightest_down > -1)
+        for (int i = md_leftest_down; i <= md_rightest_down; i++)
+        {
+            ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
+            ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
+        }
     // SUB DIAGONAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
-        ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
-    }
-    for (int j = 0; j < SIZE - 1; j++)
-    {
-        ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
-        ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
-    }
-    mark_b += is_forbidden() * FORBIDDEN;
+    // 棋盘左上部分
+    if (sd_leftest_up < SIZE && sd_rightest_up > -1)
+        for (int j = sd_leftest_up; j <= sd_rightest_up; j++)
+        {
+            ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
+            ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
+        }
+    // 棋盘右下部分
+    if (sd_leftest_down < SIZE && sd_rightest_down > -1)
+        for (int j = sd_leftest_down; j <= sd_rightest_down; j++)
+        {
+            ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
+            ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
+        }
+    // mark_b += is_forbidden() * FORBIDDEN;
     
     if (type == BLACKPIECE)
         return mark_b - ratio * mark_w;
@@ -132,7 +142,8 @@ int change_type(int type)
  **/
 #define SEARCH_AI(pos_x, pos_y) \
     if (record_board[latest_x + (pos_x)][latest_y + (pos_y)] == EMPTY \
-        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y))) \
+        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y)) \
+        && (type != BLACKPIECE || !is_forbidden_point(latest_x + (pos_x), latest_y + (pos_y)))) \
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
@@ -160,7 +171,8 @@ int change_type(int type)
  **/
 #define SEARCH_NOT_AI(pos_x, pos_y) \
     if (record_board[latest_x + (pos_x)][latest_y + (pos_y)] == EMPTY \
-        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y))) \
+        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y)) \
+        && (type != BLACKPIECE || !is_forbidden_point(latest_x + (pos_x), latest_y + (pos_y)))) \
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
