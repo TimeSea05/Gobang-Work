@@ -48,61 +48,37 @@ int calculate_mark(int type, double ratio)
     for (int i = 0; i < SIZE; i++)
     {
         ADD_MARK_BLACK(i, 0, HORIZONTAL);
-    }
-    // VERTICAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_BLACK(0, j, VERTICAL);
-    }
-    // MAIN DIAGONAL
-    for (int i = 0; i < SIZE; i++)
-    {
-        ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
-    }
-    for (int i = 0; i < SIZE - 1; i++)
-    {
-        ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
-    }
-    // SUB DIAGONAL
-    for (int j = 0; j < SIZE; j++)
-    {
-        ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
-    }
-    for (int j = 0; j < SIZE - 1; j++)
-    {
-        ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
-    }
-    mark_b += is_forbidden() * FORBIDDEN;
-    
-    /*******************计算白棋得分*******************/
-    // HORIZONTAL
-    for (int i = 0; i < SIZE; i++)
-    {
         ADD_MARK_WHITE(i, 0, HORIZONTAL);
     }
     // VERTICAL
     for (int j = 0; j < SIZE; j++)
     {
+        ADD_MARK_BLACK(0, j, VERTICAL);
         ADD_MARK_WHITE(0, j, VERTICAL);
     }
-    // MAINDIAGONAL
+    // MAIN DIAGONAL
     for (int i = 0; i < SIZE; i++)
     {
+        ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
         ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
     }
     for (int i = 0; i < SIZE - 1; i++)
     {
+        ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
         ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
     }
     // SUB DIAGONAL
     for (int j = 0; j < SIZE; j++)
     {
+        ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
         ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
     }
-    for (int j = 1; j < SIZE; j++)
+    for (int j = 0; j < SIZE - 1; j++)
     {
+        ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
         ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
     }
+    mark_b += is_forbidden() * FORBIDDEN;
     
     if (type == BLACKPIECE)
         return mark_b - ratio * mark_w;

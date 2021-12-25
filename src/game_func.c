@@ -33,8 +33,8 @@ void init_record_board()
 }
 void record_to_display_array()
 {
-	//第一步：将init_display_board_array中记录的空棋盘，复制到display_board_array中
-	//第二步：扫描record_board，当遇到非0的元素，将●或者◎复制到display_board_array的相应位置上
+	//第一步: 将init_display_board_array中记录的空棋盘，复制到display_board_array中
+	//第二步: 扫描record_board，当遇到非0的元素，将●或者◎复制到display_board_array的相应位置上
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 0; j < SIZE; j++)
 			display_board_array[i][j] = init_display_board_array[i][j];
@@ -101,7 +101,7 @@ int drop_pieces(int type, int game_mode)
 				coordinate_y = command[0]- 'a';
 			if (coordinate_x >= SIZE || coordinate_x < 0 || coordinate_y >= SIZE || coordinate_y < 0)
 			{
-				printf("位置越界！请重新输入：\n");
+				printf("位置越界! 请重新输入: \n");
 				continue;
 			}
 
@@ -120,7 +120,7 @@ int drop_pieces(int type, int game_mode)
 			}
 			else
 			{
-				printf("这里已经有棋子了！请重新输入：\n");
+				printf("这里已经有棋子了! 请重新输入: \n");
 				getchar();
 				continue;
 			}
@@ -260,12 +260,12 @@ void person_vs_person()
 
 		if (game_win() == FORBIDDEN)
 		{
-			printf("黑棋触犯禁手，白棋胜利！\n");
+			printf("黑棋触犯禁手，白棋胜利! \n");
 			break;
 		}
 		else if (game_win() == BLACKPIECE)
 		{
-			printf("黑棋胜利！\n");
+			printf("黑棋胜利! \n");
 			break;
 		}
 		record_board[latest_x][latest_y] = BLACKPIECE;
@@ -276,7 +276,7 @@ void person_vs_person()
 		display_board();
 		if (game_win() == WHITEPIECE)
 		{
-			printf("白棋胜利！\n");
+			printf("白棋胜利! \n");
 			break;
 		}
 	}
@@ -304,12 +304,12 @@ void person_vs_computer()
 			display_board();
 			if (game_win() == FORBIDDEN)
 			{
-				printf("黑棋触犯禁手，白棋胜利！\n");
+				printf("黑棋触犯禁手，白棋胜利! \n");
 				break;
 			}
 			else if (game_win() == BLACKPIECE)
 			{
-				printf("黑棋胜利！\n");
+				printf("黑棋胜利! \n");
 				break;
 			}
 
@@ -352,7 +352,7 @@ void person_vs_computer()
 			display_board();
 			if (game_win() == WHITEPIECE)
 			{
-				printf("白棋胜利！\n");
+				printf("白棋胜利! \n");
 				break;
 			}
 
