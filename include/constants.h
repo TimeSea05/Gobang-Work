@@ -6,7 +6,7 @@
 #include <limits.h>
 
 #define SIZE 15 // 棋盘大小
-#define DEPTH 4 // 极大-极小算法的搜索深度
+#define DEPTH 2 // 极大-极小算法的搜索深度
 
 enum PIECES{
     EMPTY = 0,
@@ -29,7 +29,7 @@ enum CHESS_TYPE_MARKS{
     DEAD_THREE = 4500,
     ACTIVE_THREE = 20000,
     DEAD_FOUR = 20000,
-    ACTIVE_FOUR = 2000000,
+    ACTIVE_FOUR = INT_MAX / 32,
     FIVE = INT_MAX / 2,
     FORBIDDEN = -INT_MAX / 2
 };

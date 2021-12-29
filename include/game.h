@@ -37,13 +37,14 @@ void to_string_sub_diagonal(char string_sd[], int x, int y);
  **/
 
 // 暴力匹配字符串
-int str_match(char * str_s, char * str_l);
+int str_match(char* str_s, char* str_l);
 
 // 在长字符串的两侧暴力匹配字符串，处理棋型处于棋盘边界的情况
-int str_match_side(char * str_s, char * str_l);
+// 设置该函数的原因是部分棋型在边界和在棋盘中央对应的棋子的排列方式不同
+int str_match_side(char* str_s, char* str_l);
 
 // 将字符串反序
-void str_reverse(char * str);
+void str_reverse(char* str);
 /****************************************/
 
 /********************统计指定棋子指定方向特定棋型的数目********************/

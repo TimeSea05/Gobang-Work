@@ -7,7 +7,6 @@
 #include "constants.h"
 
 extern int latest_x, latest_y;
-extern int next_point_x, next_point_y;
 extern int record_board[SIZE][SIZE];
 
 int main()
@@ -21,7 +20,7 @@ int main()
     
     while (1)
     {
-        printf("请选择游戏模式：\n");
+        printf("请选择游戏模式: \n");
         printf("人人对战请输入1; 人机对战请输入2;\n");
         int game_mode;
         scanf("%d", &game_mode);
@@ -37,8 +36,7 @@ int main()
             break;
         }
         else
-            printf("无法识别，请重新输入！");
+            printf("无法识别，请重新输入!");
     }
-    
     return 0;
 }

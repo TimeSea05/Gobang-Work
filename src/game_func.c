@@ -13,15 +13,9 @@ extern wchar_t init_display_board_array[SIZE][SIZE + 1];
 extern wchar_t display_board_array[SIZE][SIZE + 1];
 extern int record_board[SIZE][SIZE];
 extern int latest_x, latest_y;
-extern int next_point_x, next_point_y;
+extern int ai_point_x, ai_point_y;
 extern int pos_x_arr[SIZE * SIZE], pos_y_arr[SIZE * SIZE];
 extern int p_pos_arr;
-extern int prune_times;
-
-extern int leftest, rightest;
-extern int uppest, downest;
-extern int md_leftest_up, md_rightest_up, md_leftest_down, md_rightest_down;
-extern int sd_leftest_up, sd_rightest_up, sd_leftest_down, sd_rightest_down;
 
 // 黑色棋子
 wchar_t play1_pic = L'●'; 
@@ -81,64 +75,6 @@ void display_board()
 	printf("\n\n");
 }
 
-
-void update_border()
-{
-	for (int i = 0; i <= p_pos_arr; i++)
-	{
-		// 上下边界
-		if (pos_x_arr[i] < uppest)
-			uppest = pos_x_arr[i];
-		if (pos_x_arr[i] > downest)
-			downest = pos_x_arr[i];
-		// 左右边界
-		if (pos_y_arr[i] < leftest)
-			leftest = pos_y_arr[i];
-		if (pos_y_arr[i] > rightest)
-			rightest = pos_y_arr[i];
-		
-		// 主对角线方向
-		int diff = pos_y_arr[i] - pos_x_arr[i];
-		if (diff >= 0)	// 右上部分
-		{
-			if (diff < md_leftest_up)
-				md_leftest_up = diff;
-			if (diff > md_rightest_up)
-				md_rightest_up = diff;
-		}
-		else	// 左下部分
-		{
-			if (SIZE - 1 + diff < md_leftest_down)
-				md_leftest_down = SIZE + diff - 1;
-			if (SIZE - 1 + diff > md_rightest_down)
-				md_rightest_down = SIZE + diff - 1;	
-		}
-		// 次对角线方向
-		int sum = pos_x_arr[i] + pos_y_arr[i];
-		if (sum <= SIZE - 1)	// 左上部分
-		{
-			if (sum < sd_leftest_up)
-				sd_leftest_up = sum;
-			if (sum > sd_rightest_up)
-				sd_rightest_up = sum;
-		}
-		else
-		{
-			if (sum + 1 - SIZE < sd_leftest_down)
-				sd_leftest_down = sum + 1 - SIZE;
-			if (sum + 1 - SIZE > sd_rightest_down)
-				sd_rightest_down = sum + 1 - SIZE;
-		}
-	}
-}
-void reset_border()
-{
-	leftest = SIZE, rightest = -1;
-	uppest = SIZE, downest = -1;
-	md_leftest_up = SIZE, md_rightest_up = -1, md_leftest_down = SIZE, md_rightest_down = -1;
-	sd_leftest_up = SIZE, sd_rightest_up = -1, sd_leftest_down = SIZE, sd_rightest_down = -1;
-}
-
 int drop_pieces(int type, int game_mode)
 {
 	printf("请输入你要下的棋子的坐标(e.g. H1 or h1):\n");
@@ -179,7 +115,6 @@ int drop_pieces(int type, int game_mode)
 				latest_x = coordinate_x, latest_y = coordinate_y;
 				p_pos_arr++;
 				pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y;
-				update_border();
 				getchar();
 				break;
 			}
@@ -220,7 +155,7 @@ void regret(int game_mode)
 
 int game_win()
 {
-	if (is_forbidden_global())
+	if (is_forbidden())
 		return FORBIDDEN;
 
 	// HORIZONTAL
@@ -272,7 +207,7 @@ int game_win()
 	return 0;
 }
 
-int is_forbidden_global()
+int is_forbidden()
 {
 	// 扫描整个棋盘，只对黑色棋子位置进行判定
 	for (int x = 0; x < SIZE; x++)
@@ -312,60 +247,6 @@ int is_forbidden_global()
 				if (overline || special_forbidden)
 					return 1;
 			}
-	return 0;
-}
-
-int is_forbidden_point(int x, int y)
-{
-	if (record_board[x][y] != EMPTY)
-		return -1;
-	
-	// 各种可能触犯禁手的棋型的总数
-	int active_three = 0;
-	int dead_four = 0;
-	int active_four = 0;
-	int overline = 0;
-	int special_forbidden = 0;
-
-	record_board[x][y] = BLACKPIECE;			
-	for (int direction = 1; direction <= 4; direction++)
-	{
-		// 只要形成五连禁手就会失效
-		if (is_five_black(x, y, direction))
-		{
-			record_board[x][y] = EMPTY;
-			return 0;
-		}
-		if (num_active_three_black(x, y, direction))
-			active_three++;
-		if (num_dead_four_black(x, y, direction))
-			dead_four++;
-		if (num_active_four_black(x, y, direction))
-			active_four++;
-		if (num_overline(x, y, direction))
-			overline++;
-		if (num_special_forbiddens(x, y, direction))
-			special_forbidden++;
-	}
-	// 双活三
-	if (active_three > 1)
-	{
-		record_board[x][y] = EMPTY;
-		return 1;
-	}
-	// 双四
-	if (dead_four + active_four > 1)
-	{
-		record_board[x][y] = EMPTY;
-		return 1;
-	}
-	// 长连或者特殊禁手
-	if (overline || special_forbidden)
-	{
-		record_board[x][y] = EMPTY;
-		return 1;
-	}
-	record_board[x][y] = EMPTY;
 	return 0;
 }
 
@@ -436,16 +317,14 @@ void person_vs_computer()
 
 			// AI落子
 			min_max_search(DEPTH, 1, -INT_MAX, INT_MAX, WHITEPIECE, 1);
-			record_board[next_point_x][next_point_y] = WHITETRIANGLE;
+			record_board[ai_point_x][ai_point_y] = WHITETRIANGLE;
 			record_board[latest_x][latest_y] = BLACKPIECE;
-			latest_x = next_point_x, latest_y = next_point_y;
+			latest_x = ai_point_x, latest_y = ai_point_y;
 			p_pos_arr++;
 			pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y;
 			record_to_display_array();
 			display_board();
 			printf("机器落子的位置为: %c%d\n", latest_y + 'A', SIZE - latest_x);
-			printf("剪枝次数: %d\n", prune_times);
-			prune_times = 0;
 			if (game_win() == WHITEPIECE)
 			{
 				printf("白棋胜利!\n");
@@ -481,16 +360,14 @@ void person_vs_computer()
 
 			// AI落子
 			min_max_search(DEPTH, 1, -INT_MAX, INT_MAX, BLACKPIECE, 0.2);
-			record_board[next_point_x][next_point_y] = BLACKTRIANGLE;
+			record_board[ai_point_x][ai_point_y] = BLACKTRIANGLE;
 			record_board[latest_x][latest_y] = WHITEPIECE;
-			latest_x = next_point_x, latest_y = next_point_y;
+			latest_x = ai_point_x, latest_y = ai_point_y;
 			p_pos_arr++;
 			pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y;
 			record_to_display_array();
 			display_board();
 			printf("机器落子的位置为: %c%d\n", latest_y + 'A', SIZE - latest_x);
-			printf("剪枝次数: %d\n", prune_times);
-			prune_times = 0;
 			if (game_win() == BLACKPIECE)
 			{
 				printf("黑棋胜利!\n");

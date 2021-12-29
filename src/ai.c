@@ -6,16 +6,10 @@
 
 extern int latest_x, latest_y;
 extern int record_board[SIZE][SIZE];
-extern int next_point_x, next_point_y;
-
-extern int leftest, rightest;
-extern int uppest, downest;
-extern int md_leftest_up, md_rightest_up, md_leftest_down, md_rightest_down;
-extern int sd_leftest_up, sd_rightest_up, sd_leftest_down, sd_rightest_down;
+extern int ai_point_x, ai_point_y;
 
 extern int pos_x_arr[SIZE * SIZE], pos_y_arr[SIZE * SIZE];
 extern int p_pos_arr;
-extern int prune_times;
 
 /**
  * 在程序中多处使用宏函数来精简代码结构，导致代码的可读性降低
@@ -54,50 +48,44 @@ int calculate_mark(int type, double ratio)
 
     /*******************计算黑棋与白棋得分*******************/
     // HORIZONTAL
-    if (uppest < SIZE && downest > -1)
-        for (int i = uppest; i <= downest; i++)
-        {
-            ADD_MARK_BLACK(i, 0, HORIZONTAL);
-            ADD_MARK_WHITE(i, 0, HORIZONTAL);
-        }
+    for (int i = 0; i < SIZE; i++)
+    {
+        ADD_MARK_BLACK(i, 0, HORIZONTAL);
+        ADD_MARK_WHITE(i, 0, HORIZONTAL);
+    }
     // VERTICAL
-    if (leftest < SIZE && rightest > -1)
-        for (int j = leftest; j <= rightest; j++)
-        {
-            ADD_MARK_BLACK(0, j, VERTICAL);
-            ADD_MARK_WHITE(0, j, VERTICAL);
-        }
+    for (int j = 0; j < SIZE; j++)
+    {
+        ADD_MARK_BLACK(0, j, VERTICAL);
+        ADD_MARK_WHITE(0, j, VERTICAL);
+    }
     // MAIN DIAGONAL
     // 棋盘右上部分
-    if (md_leftest_up < SIZE && md_rightest_up > -1)
-        for (int i = md_leftest_up; i <= md_rightest_up; i++)
-        {
-            ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
-            ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
-        }
+    for (int i = 0; i < SIZE; i++)
+    {
+        ADD_MARK_BLACK(0, i, MAIN_DIAGONAL);
+        ADD_MARK_WHITE(0, i, MAIN_DIAGONAL);
+    }
     // 棋盘左下部分
-    if (md_leftest_down < SIZE && md_rightest_down > -1)
-        for (int i = md_leftest_down; i <= md_rightest_down; i++)
-        {
-            ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
-            ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
-        }
+    for (int i = 0; i < SIZE - 1; i++)
+    {
+        ADD_MARK_BLACK(14, i, MAIN_DIAGONAL);
+        ADD_MARK_WHITE(14, i, MAIN_DIAGONAL);
+    }
     // SUB DIAGONAL
     // 棋盘左上部分
-    if (sd_leftest_up < SIZE && sd_rightest_up > -1)
-        for (int j = sd_leftest_up; j <= sd_rightest_up; j++)
-        {
-            ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
-            ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
-        }
+    for (int j = 0; j < SIZE; j++)
+    {
+        ADD_MARK_BLACK(0, j, SUB_DIAGONAL);
+        ADD_MARK_WHITE(0, j, SUB_DIAGONAL);
+    }
     // 棋盘右下部分
-    if (sd_leftest_down < SIZE && sd_rightest_down > -1)
-        for (int j = sd_leftest_down; j <= sd_rightest_down; j++)
-        {
-            ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
-            ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
-        }
-    // mark_b += is_forbidden() * FORBIDDEN;
+    for (int j = 0; j < SIZE - 1; j++)
+    {
+        ADD_MARK_BLACK(14, j, SUB_DIAGONAL);
+        ADD_MARK_WHITE(14, j, SUB_DIAGONAL);
+    }
+    mark_b += is_forbidden() * FORBIDDEN;
     
     if (type == BLACKPIECE)
         return mark_b - ratio * mark_w;
@@ -142,24 +130,21 @@ int change_type(int type)
  **/
 #define SEARCH_AI(pos_x, pos_y) \
     if (record_board[latest_x + (pos_x)][latest_y + (pos_y)] == EMPTY \
-        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y)) \
-        && (type != BLACKPIECE || !is_forbidden_point(latest_x + (pos_x), latest_y + (pos_y)))) \
+        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y))) \
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
         p_pos_arr++; \
 		pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y; \
         record_board[latest_x][latest_y] = type; \
-        update_border(); \
         int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
         record_board[latest_x][latest_y] = EMPTY; \
         p_pos_arr--; \
-        reset_border(); \
         if (val > alpha) \
         { \
             alpha = val; \
             if (depth == DEPTH) \
-                next_point_x = latest_x, next_point_y = latest_y; \
+                ai_point_x = latest_x, ai_point_y = latest_y; \
         } \
         latest_x = latest_x_copy, latest_y = latest_y_copy; \
         if (alpha > beta) \
@@ -171,18 +156,15 @@ int change_type(int type)
  **/
 #define SEARCH_NOT_AI(pos_x, pos_y) \
     if (record_board[latest_x + (pos_x)][latest_y + (pos_y)] == EMPTY \
-        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y)) \
-        && (type != BLACKPIECE || !is_forbidden_point(latest_x + (pos_x), latest_y + (pos_y)))) \
+        && has_neighbor(latest_x + (pos_x), latest_y + (pos_y))) \
     { \
         int latest_x_copy = latest_x, latest_y_copy = latest_y; \
         latest_x = latest_x + (pos_x), latest_y = latest_y + (pos_y); \
         p_pos_arr++; \
 		pos_x_arr[p_pos_arr] = latest_x, pos_y_arr[p_pos_arr] = latest_y; \
         record_board[latest_x][latest_y] = type; \
-        update_border(); \
         int val = min_max_search(depth - 1, !is_ai, alpha, beta, change_type(type), ratio); \
         p_pos_arr--; \
-        reset_border(); \
         record_board[latest_x][latest_y] = EMPTY; \
         if (val < beta) \
         { \
@@ -222,7 +204,6 @@ int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double r
             }
         }
         finish_ai:
-            prune_times++;
             return alpha;  
     }
     else
@@ -245,7 +226,6 @@ int min_max_search(int depth, int is_ai, int alpha, int beta, int type, double r
             }
         }
         finish_not_ai:
-            prune_times++;
             return beta;
     }
 }

@@ -150,14 +150,14 @@ int str_match_side(char* str_s, char* str_l)
         return 0;
 
     int res = 0;
-    // one side
+    // 棋盘一侧
     int i;
     for (i = 0; i < len_str_s; i++)
         if (!(str_s[i] == str_l[i]))
             break;
     if (i == len_str_s)
         res++;
-    // another side
+    // 棋盘另一侧
     for (i = 0; i < len_str_s; i++)
         if (!(str_s[i] == str_l[len_str_l - 1 - i]))
             break;
